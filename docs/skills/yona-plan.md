@@ -47,6 +47,7 @@ Use `notes.md` as the live discovery log. Include:
 - Initial understanding and goals.
 - Current state of the codebase or process.
 - Relevant files, modules, services, docs, or repos inspected.
+- Documentation surfaces likely to need updates.
 - Questions with context and suggested answers.
 - User answers and corrections.
 - Scope changes from the user.
@@ -147,6 +148,7 @@ Use one `plan.md`. Summarize:
 
 - Scope and explicit out-of-scope boundaries.
 - Files/modules likely affected.
+- Docs likely affected, especially package/module `README.md` files, or why no docs updates are expected.
 - Important data type, API, architecture, security, or process changes.
 - Validation commands.
 - ADR expectation: `expected`, `possible`, or `none`.
@@ -217,6 +219,7 @@ adr: expected | possible | none
 - Scope and out-of-scope boundaries.
 - Discovery summary with link to `notes.md`.
 - Files/modules expected to change.
+- Documentation expected to change, including package/module `README.md` files when the package purpose or boundaries change.
 - Architecture, data type, API, security, or process decisions.
 - ADR expectations or candidates.
 - Validation strategy.
@@ -252,6 +255,7 @@ Include:
 - Size: usually `sm`; if `md` or `lg`, say whether another `yona-plan` run is required.
 - Dependencies and parallelization notes.
 - Files/modules likely affected.
+- Docs likely affected and what should be updated, including nearby package/module `README.md` files.
 - Implementation details, with code examples when helpful.
 - Relevant style rules or repo conventions.
 - ADR expectation for the phase.
@@ -265,7 +269,7 @@ Include:
 - Validation commands.
 - Definition of done.
 
-The final phase of medium and large plans should include cleanup and validation. It should grep for TODOs, debug prints, commented-out code, scratch files, suppressed warnings, disabled tests, and scope creep.
+The final phase of medium and large plans should include cleanup, docs, and validation. It should grep for TODOs, debug prints, commented-out code, scratch files, suppressed warnings, disabled tests, stale docs, missing docs, and scope creep.
 
 Do not plan to rename phase files after completion. Keep names such as `01-phase-title.md` stable so links and agent references remain valid. If phase-level traceability is useful, `yona-implement` may append a short `Implementation Result` section to the phase file after that phase is complete.
 
@@ -291,6 +295,7 @@ Implementation completion is recorded in `_DONE.md` in the planning directory, n
 - Completed work.
 - Validation commands and results.
 - Deviations from the plan.
+- Documentation updated, or why no docs were needed.
 - ADRs created, or why no ADR was warranted.
 - Follow-up work that remains outside the completed scope.
 

@@ -35,6 +35,7 @@ Read `plan.md` first. Inspect:
 - phase/work-item files such as `01-*.md`
 - phase directories with their own `plan.md`
 - ADR expectations/candidates
+- documentation expectations, affected docs, or missing docs called out by the plan
 - validation commands
 - existing `_DONE.md`, if present
 
@@ -51,7 +52,8 @@ For each work item:
 3. Review every delegated result before moving on.
 4. Re-run the work-item validation commands.
 5. Record phase-level implementation results when phase files exist.
-6. Check for shortcuts: TODOs, stubbed logic, suppressed warnings, disabled tests, scope creep, or unrelated refactors.
+6. Update relevant documentation when the change alters public behavior, workflows, architecture, commands, package/module purpose, configuration, operations, or planning/process conventions.
+7. Check for shortcuts: TODOs, stubbed logic, suppressed warnings, disabled tests, scope creep, stale docs, or unrelated refactors.
 
 If a phase says `sub-phases recommended`, decide whether to split before execution. If it says `sub-phases required`, split before execution.
 
@@ -103,6 +105,20 @@ If no ADR is warranted, state that in the final response.
 
 Historical ADR backfill is different: produce an ADR candidate list for human review before creating historical ADR files unless the user explicitly approved the candidates.
 
+## Documentation
+
+Before final validation and any commit, review the completed diff for documentation impact.
+
+Update docs when the implementation changes:
+
+- public commands, setup, deployment, validation, or troubleshooting steps
+- package/module purpose, especially `README.md` files next to changed packages
+- architecture, runtime boundaries, module ownership, data models, APIs, or workflows
+- user-visible behavior, UI flows, permissions, operational runbooks, or process conventions
+- ADR-worthy decisions that should be durable in `docs/adr/`
+
+Prefer existing repo docs near the changed code before adding new docs. If no docs need changes, record why in the implementation log or final response. If docs are intentionally deferred, record the follow-up explicitly.
+
 ## Implementation Log
 
 After implementation, validation, ADR handling, and any requested commit, write `_DONE.md` in the planning directory. This is the completion log for what actually happened, separate from ADRs and separate from `notes.md`.
@@ -128,6 +144,7 @@ Then include:
 - Completed work.
 - Validation commands and results.
 - Deviations from the plan, or `None`.
+- Documentation updated, or why no docs were needed.
 - ADRs created, or why no ADR was warranted.
 - Follow-up work that remains outside the completed scope.
 
@@ -168,7 +185,10 @@ Finish with:
 - Outcome.
 - Files changed.
 - Validation commands and results.
+- Documentation updated, or why no docs were needed.
 - ADRs created, or why none were warranted.
 - Archive path.
 - Commit SHA, if a commit was created.
 - Any remaining follow-up work.
+
+If the work still needs a push, PR creation, or CI watching, say that plainly and suggest `yona-push`.

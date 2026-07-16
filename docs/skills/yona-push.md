@@ -72,10 +72,12 @@ A portable helper pattern:
 ```bash
 interval="${YONA_PUSH_CHECK_INTERVAL:-20}"
 gh pr checks --watch --interval "$interval"
-gh pr checks --json name,workflow,bucket,state,startedAt,completedAt,link
+gh pr checks --json name,workflow,bucket,state,startedAt,completedAt,link,description
 ```
 
 If no checks appear, inspect changed paths, branch protection, and workflow triggers before treating that as a failure.
+
+While watching, preserve useful links for the final handoff: the PR, failing or pending CI jobs, and the latest relevant GitHub Actions run/job pages. Prefer structured output that includes links and descriptions over scraping terminal output later.
 
 ## Fix CI Failures
 
@@ -97,11 +99,19 @@ Stop and ask when:
 - Fixing the failure would expand scope beyond the implemented plan.
 - Visual review, deploy approval, or product judgment needs human approval.
 
+When stopping for a human review or approval step, include direct Markdown links to the pages the human needs, and summarize the exact check descriptions so they know what to look at.
+
 ## Completion
 
-Finish with:
+Before finishing, run `git status --short` and one final structured check query:
 
-- PR URL.
+```bash
+gh pr view --json number,url,title,headRefName,baseRefName,state,isDraft
+gh pr checks --json name,workflow,bucket,state,link,description
+```
+
+Finish with direct Markdown links to the PR and important CI results, plus:
+
 - Branch name.
 - Current CI state.
 - Fixes pushed during CI repair.

@@ -4,6 +4,33 @@ This repo contains a small set of agent workflow skills for teaching newer coder
 
 The skills are plain Markdown files. They are written so you can point an agent at this repo, tell it which skill to use, and have it follow a repeatable workflow for planning, implementation, review, and pull-request cleanup.
 
+## Quick Install (Claude Code)
+
+Copy and paste this into a terminal:
+
+```bash
+git clone https://github.com/Yona-Appletree/2026-ai-teaching.git
+cd 2026-ai-teaching
+./install.sh
+```
+
+That installs the skills into `~/.claude/skills/`, so they are available in every project. Start a new Claude Code session in any project and use them as slash commands:
+
+```text
+/yona-plan add user profiles to this app
+/yona-implement docs/plans/2026-06-09-user-profiles/plan.md
+/yona-review my current branch against main
+/yona-push
+```
+
+To update to the latest versions later:
+
+```bash
+cd 2026-ai-teaching
+git pull
+./install.sh
+```
+
 ## What Is In Here
 
 - `docs/skills/yona-plan.md`: turns an idea into a concrete repo-local plan.
@@ -18,9 +45,9 @@ The repo also includes empty directories for artifacts created by those workflow
 - `docs/archive/plans/`: completed, cancelled, or superseded plans.
 - `docs/archive/reviews/`: resolved or obsolete reviews.
 
-## How To Use These With An Agent
+## Using Without Installing
 
-Clone or add this repo somewhere your AI tool can read. Then point the agent at the relevant skill file and ask it to follow that workflow.
+If you are not using Claude Code, or you do not want to install anything, clone or add this repo somewhere your AI tool can read. Then point the agent at the relevant skill file and ask it to follow that workflow.
 
 Example prompts:
 
@@ -40,7 +67,7 @@ Use docs/skills/yona-review.md to review my current branch against main.
 Use docs/skills/yona-push.md to push this finished branch, create a PR, and watch CI.
 ```
 
-If your agent supports custom skills directly, install or register the Markdown files in `docs/skills/`. If it does not, paste the relevant skill into the chat or tell the agent to read the file before it starts.
+If your agent supports custom skills or commands directly, install or register the Markdown files in `docs/skills/`. If it does not, paste the relevant skill into the chat or tell the agent to read the file before it starts.
 
 ## Suggested Workflow
 
