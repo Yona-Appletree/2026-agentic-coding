@@ -17,6 +17,7 @@ cd 2026-ai-teaching
 That symlinks the skills into `~/.claude/skills/`, so they are available in every project. Start a new Claude Code session in any project and use them as slash commands:
 
 ```text
+/yona-ux explore layouts for the settings panel
 /yona-plan add user profiles to this app
 /yona-implement docs/plans/2026-06-09-user-profiles/plan.md
 /yona-review my current branch against main
@@ -35,6 +36,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 ## What Is In Here
 
 - `docs/principles.md`: the way of working behind the skills — start here.
+- `docs/skills/yona-ux/`: explores UI/UX directions before planning — a self-contained HTML spike playground with several concepts side by side, ending at a visual review gate.
 - `docs/skills/yona-plan/`: turns an idea into a concrete plan with declared review gates.
 - `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, records what happened, and archives the plan.
 - `docs/skills/yona-review/`: reviews a branch, PR, diff, or local changes and writes durable review notes.
