@@ -1,6 +1,6 @@
 ---
 name: yona-review
-description: Review local changes, branches, worktrees, diffs, or GitHub pull requests with durable repo-local review artifacts.
+description: Review local changes, branches, worktrees, diffs, or GitHub pull requests with durable review artifacts.
 ---
 
 # Yona Review
@@ -9,41 +9,45 @@ Use this skill when the user asks for a code review of a branch, PR, worktree, d
 
 ## Review Location
 
+Resolve the workspace the same way `yona-plan` does:
+
+1. Determine the repo root with `git rev-parse --show-toplevel`. If the project is not a git repo, use the current working directory and name the review directory from the topic the user provided.
+2. Read `agent-context.toml` at the repo root when present, for `repo_slug`, `planning_root`, and `planning_root_env`.
+3. Resolve the planning root, first match wins: the environment variable named by `planning_root_env` when set and non-empty, then `planning_root` from the config (expanding `~`), then repo-local.
+
 Write durable review artifacts under:
 
-```text
-docs/reviews/<YYYY-MM-DD>-<branch-or-topic>/
-```
+- external planning root: `<planning-root>/<repo-slug>/_reviews/<YYYY-MM-DD-HHMM>-<branch-or-topic>/`
+- repo-local default: `<repo-root>/docs/reviews/<YYYY-MM-DD-HHMM>-<branch-or-topic>/`
 
-Archive resolved or obsolete reviews under:
+Archive resolved or obsolete reviews under `_reviews/_archive/` or `docs/archive/reviews/` respectively, preserving the basename.
 
-```text
-docs/archive/reviews/<YYYY-MM-DD>-<branch-or-topic>/
-```
+Use the local workspace timezone for the timestamp. Reuse an existing review directory for the same branch or PR — including older date-only directories — unless the user asks for a fresh review.
 
-If the project is not a git repo, use the current working directory as the repo root and name the review directory from the topic the user provided.
+After resolving context, read repo agent guides such as `AGENTS.md`, `CLAUDE.md`, or `.cursorrules`. Review against repo-specific constraints, especially product-critical architecture rules.
 
 ## Review Process
 
 1. Identify the target and base ref.
 2. Reuse an existing review directory for the same branch/PR unless the user asks for a fresh review.
 3. Capture changed files, diff stat, commits, and patch when useful.
-4. Review for correctness, security, migration risk, public contracts, UX/accessibility, tests, and repo conventions.
+4. Run the relevant passes from `references/review-passes.md`.
 5. Write a concise review summary.
 6. Create numbered durable issue files for valid findings.
 
-For git-backed reviews, collect context with commands like:
+For git-backed reviews, `scripts/collect-review-context.sh <base-ref> <review-dir> [head-ref]` writes the artifacts below in one step. `scripts/prepare-review-worktree.sh <branch> [worktree-root]` creates or updates a worktree when the review needs the branch checked out separately.
+
+Equivalent by hand:
 
 ```bash
 base_ref="${BASE_REF:-origin/main}"
 head_ref="${HEAD_REF:-HEAD}"
-review_dir="docs/reviews/$(date +%F)-$(git branch --show-current | tr -cs 'A-Za-z0-9._-' '-')"
-mkdir -p "$review_dir/artifacts"
 merge_base="$(git merge-base "$base_ref" "$head_ref")"
+mkdir -p "$review_dir/artifacts"
 git diff --name-only "$merge_base..$head_ref" > "$review_dir/artifacts/changed-files.txt"
-git diff --stat "$merge_base..$head_ref" > "$review_dir/artifacts/diff-stat.txt"
-git log --oneline "$merge_base..$head_ref" > "$review_dir/artifacts/commits.txt"
-git diff "$merge_base..$head_ref" > "$review_dir/artifacts/patch.diff"
+git diff --stat      "$merge_base..$head_ref" > "$review_dir/artifacts/diff-stat.txt"
+git log  --oneline   "$merge_base..$head_ref" > "$review_dir/artifacts/commits.txt"
+git diff             "$merge_base..$head_ref" > "$review_dir/artifacts/patch.diff"
 ```
 
 ## Artifact Shape
@@ -59,7 +63,7 @@ Create:
 
 Each issue file should include:
 
-- Severity: `P0`, `P1`, `P2`, or `P3`.
+- Severity: `P0`, `P1`, `P2`, or `P3` — see `references/finding-severity.md`.
 - File and line references when available.
 - What is wrong.
 - Why it matters.
@@ -68,65 +72,26 @@ Each issue file should include:
 
 ## Severity
 
-Use severity to communicate merge risk, not reviewer confidence.
+Use severity to communicate merge risk, not reviewer confidence. `references/finding-severity.md` has the full rubric; the short form:
 
-- `P0`: release-stopping issue such as credential leak, exploitable security flaw, data loss, deploy breakage, broken auth, or tenant isolation failure.
-- `P1`: likely user-visible or correctness failure, backwards-incompatible API or persisted-data change, or missing tests for high-risk touched behavior.
-- `P2`: meaningful engineering risk, missing edge-case coverage for non-critical behavior, accessibility or responsive issue in a touched UI path, or observability gap.
-- `P3`: minor tracked work such as naming, clarity, low-risk cleanup, or documentation gaps.
+- `P0`: release-stopping — credential leak, exploitable flaw, data loss, deploy breakage, broken auth or tenant isolation, product-critical path disabled.
+- `P1`: likely user-visible or correctness failure, backwards-incompatible API or persisted-data change, missing tests for high-risk touched behavior, broken target-specific build path.
+- `P2`: meaningful engineering risk — pattern violation, missing edge-case coverage, accessibility or responsive issue in a touched UI path, observability gap, unmeasured performance or size regression.
+- `P3`: minor tracked work — naming, clarity, low-risk cleanup, documentation gaps.
 
 When uncertain, choose the lower severity and write better evidence.
 
 ## Review Passes
 
-Use only the passes relevant to the diff.
-
-Correctness:
-
-- Does the implementation satisfy the apparent user story?
-- Are empty, duplicate, missing, and malformed inputs handled?
-- Are async, ordering, retry, or race behaviors safe?
-- Does the code preserve existing wire formats and persisted data?
-
-Tests:
-
-- Do tests fail before the fix and pass after it?
-- Are important edge cases covered at the right layer?
-- Did the change weaken, skip, or over-mock existing tests?
-
-Repo conventions:
-
-- Does the code follow existing nearby patterns?
-- Are types, schemas, factories, providers, and helpers organized like the rest of the repo?
-- Did the change add avoidable global state or hidden coupling?
-
-Backend:
-
-- Authorization and data boundaries.
-- Database transactions and migrations.
-- Log redaction for credential-like values.
-- Useful telemetry or debugging fields where incidents would need them.
-
-Frontend:
-
-- Accessible controls and keyboard behavior.
-- Responsive layout with no text overlap.
-- Existing component patterns.
-- Feature UI for workflows, not marketing UI inside product surfaces.
-
-Operations:
-
-- Build, test, deploy, and rollback behavior.
-- Config defaults and missing environment variables.
-- Health checks and logs useful enough for incident debugging.
+`references/review-passes.md` holds the full checklists: correctness, tests, repo conventions, embedded and runtime, security and operations, and frontend. Use only the passes relevant to the diff.
 
 ## ADR Candidates
 
 If the review reveals a durable architectural or policy decision, record it as an ADR candidate in `summary.md`.
 
-Create an ADR only when a change chooses a direction among plausible alternatives and that choice has lasting architectural, operational, security, data-model, API, workflow, or cross-repo/process consequences.
+Create an ADR only when a change chooses a direction among plausible alternatives and that choice has lasting architectural, operational, security, data-model, API, workflow, product, embedded, or cross-repo/process consequences.
 
-Accepted ADRs should be committed with the implementation or policy change that resolves the review.
+Accepted ADRs are committed with the implementation or policy change that resolves the review.
 
 ## Final Response
 
