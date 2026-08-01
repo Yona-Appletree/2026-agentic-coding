@@ -63,11 +63,13 @@ Then a concise body:
 
 ### Draft or ready
 
-Create the PR as a draft. Mark it ready once CI is green, no work remains, and no review gate is pending:
+Create the PR as a draft. Mark it ready as soon as the work is feature-complete and no review gate is pending — **not** once CI is green:
 
 ```bash
 gh pr ready
 ```
+
+Draft tracks how complete the work is, not how the build is doing. Red CI on complete work gets fixed on a ready PR; leaving a finished PR in draft waiting for green just means the user flips the switch by hand later. Marking it ready does not end the job — keep watching and repairing CI as below.
 
 If a gate is pending, it stays draft and the handoff says so. Never mark a PR ready to satisfy a gate. Do not merge the PR unless the user explicitly asks.
 

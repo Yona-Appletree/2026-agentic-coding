@@ -12,8 +12,8 @@ Use this skill to execute an existing `plan.md` with disciplined validation.
 **The definition of done is a pushed pull request with CI watched — not a clean worktree, not a green local test run, not a commit.**
 
 ```text
-no gates:    plan → implement → validate → PR → CI green
-with gates:  plan → implement → gate → implement → validate → PR (draft) → CI green → gate
+no gates:    plan → implement → validate → PR (draft → ready) → CI green
+with gates:  plan → implement → gate → implement → validate → PR (draft → ready) → CI green → gate
 ```
 
 Run from the start of the plan to the first declared gate. After a gate is answered, run from there to the next gate, or to the pull request. Do not check in at points that are not gates.
@@ -82,19 +82,24 @@ If PR creation or pushing is blocked — missing `gh` auth, no remote, branch po
 
 ## Draft Or Ready
 
-The PR stays **draft** while any of these is true:
+Draft tracks **how complete the work is**, not how the build is doing. The PR stays **draft** while any of these is true:
 
 - phases remain
 - a gate is pending
-- CI is not green
 
-Mark it **ready for review** when all three clear: every phase is done, CI is green, and no gate is pending.
-
-If the plan's last act is a gate, the PR stays draft and the handoff says so — the user marks it ready, or tells you to. Never mark a PR ready to satisfy a gate.
+Mark it **ready for review** as soon as the work is feature-complete — every phase done, no gate pending — **whether or not CI is green**.
 
 ```bash
 gh pr ready
 ```
+
+Red CI on complete work is a defect to fix on a ready PR, not a reason to withhold the PR. The diff is reviewable while you repair the build, and the alternative is worse: the user ends up flipping the switch by hand after a CI run they had to notice on their own. **Never leave a finished PR in draft waiting for green.**
+
+Marking it ready is not the end of the pipeline. Keep watching CI and repairing it exactly as Push And Watch CI describes. Ready changes who can see the work; it does not change what you still owe.
+
+If the plan's last act is a gate, the PR stays draft and the handoff says so — the user marks it ready, or tells you to. Never mark a PR ready to satisfy a gate.
+
+If the work later becomes unfinished again — a follow-up phase opens, or a handoff parks it — put it back to draft with `gh pr ready --undo`.
 
 ## Execution
 
@@ -160,6 +165,7 @@ In particular, do not stop to:
 - ask whether to commit, push, or open the PR — the pipeline already answers all three
 - announce that implementation is done and ask whether to push
 - ask whether to mark the PR ready — the Draft Or Ready rule already answers it
+- hold a feature-complete PR in draft until CI goes green — readiness does not wait on the build
 - wait out a CI run you could be watching
 
 When you do stop, state the single next action in one line, so that `go` is a sufficient reply.
