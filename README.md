@@ -22,6 +22,7 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 /yona-implement docs/plans/2026-06-09-user-profiles/plan.md
 /yona-review my current branch against main
 /yona-push
+/yona-handoff
 ```
 
 Because the install is a symlink, updating is just:
@@ -41,6 +42,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 - `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, records what happened, and archives the plan.
 - `docs/skills/yona-review/`: reviews a branch, PR, diff, or local changes and writes durable review notes.
 - `docs/skills/yona-push/`: pushes a branch that already has the work on it, creates or updates a GitHub PR, watches CI, and fixes focused CI failures.
+- `docs/skills/yona-handoff/`: hands unfinished work to another agent — lands and pushes everything, keeps it behind a draft PR, and writes a dated handoff document so the next agent can pick it up cold. Invoke it by hand when you decide to stop.
 
 Each skill is a directory containing `SKILL.md`, plus `references/` and `scripts/` where they help.
 
@@ -73,6 +75,10 @@ Use docs/skills/yona-review/SKILL.md to review my current branch against main.
 Use docs/skills/yona-push/SKILL.md to push this branch, create a PR, and watch CI.
 ```
 
+```text
+Use docs/skills/yona-handoff/SKILL.md to wrap up this session and write a handoff.
+```
+
 If your agent supports custom skills or commands directly, install or register the directories in `docs/skills/`. If it does not, paste the relevant skill into the chat or tell the agent to read the file before it starts.
 
 ## Suggested Workflow
@@ -82,6 +88,7 @@ If your agent supports custom skills or commands directly, install or register t
 3. Use `yona-implement` to execute the plan. It runs to the first review gate the plan declared, or to a pull request if the plan declared none.
 4. Use `yona-review` before merging, especially for risky changes.
 5. Use `yona-push` for a branch that already has the work on it but no PR yet.
+6. Run `yona-handoff` yourself when you decide to move unfinished work to another agent. It pushes what exists behind a draft PR and writes down everything that only lived in the conversation.
 
 The point is not ceremony for its own sake. The point is to teach agents to leave useful artifacts behind: what was decided, what changed, how it was validated, and what still needs a human call.
 
