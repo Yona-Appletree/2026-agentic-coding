@@ -91,7 +91,7 @@ The most common way this workflow goes wrong is an agent that stops every time i
 
 So the skills draw one line. `yona-plan` declares **review gates**: the specific points where a human needs to judge something, each with its questions written down. `yona-implement` then runs from the start of the plan to the first gate, and from the last gate to a pull request, without checking in anywhere else. A phase boundary is not a gate. A commit is not a gate. "Implementation is finished" is not a gate.
 
-The pull request is part of the pipeline, not a follow-up step. `yona-implement` opens it as a draft as soon as there is a first commit — before the work is done — so CI starts giving you signal early. It goes ready for review when the work is complete, CI is green, and no gate is pending. If the plan ends at a gate, the PR stays draft and the handoff says so.
+The pull request is part of the pipeline, not a follow-up step. `yona-implement` opens it as a draft as soon as there is a first commit — before the work is done — so CI starts giving you signal early. It goes ready for review as soon as the work is feature-complete and no gate is pending, *whether or not CI is green*: draft tracks how complete the work is, not how the build is doing, and a finished PR parked in draft waiting for green is one you end up undrafting by hand. The agent keeps watching and fixing CI on the ready PR. If the plan ends at a gate, the PR stays draft and the handoff says so.
 
 ## Where Artifacts Live
 
