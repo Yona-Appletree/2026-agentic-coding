@@ -1,6 +1,6 @@
 ---
 name: yona-handoff
-description: Hand this session's unfinished work to another agent — land and push every change, ensure a draft pull request exists, write a dated handoff document in the durable planning directory, and hand back its exact path plus a short restart prompt. Invoked manually.
+description: Hand this session's unfinished work to another agent — land and push every change, ensure a draft pull request exists, write a dated handoff document in the durable planning directory, list it in the day's handoff roll-up, and hand back its exact path plus a short restart prompt. Invoked manually.
 ---
 
 # Yona Handoff
@@ -9,10 +9,10 @@ This skill is invoked by hand, and only by hand. When it runs, the decision to s
 
 Agents are amnesic. The agent picking this up starts from zero and can recover only what is on disk and on the remote. A handoff is the act of moving everything valuable out of the conversation before the conversation disappears.
 
-**The definition of done: every change is pushed, a draft PR marked `[HANDOFF]` points at it, a dated handoff file exists in the durable planning directory, and the user has its exact path plus a prompt that restarts the work.**
+**The definition of done: every change is pushed, a draft PR marked `[HANDOFF]` points at it, a dated handoff file exists in the durable planning directory, that handoff is listed in the day's roll-up document, and the user has its exact path plus a prompt that restarts the work.**
 
 ```text
-land the code → draft PR → handoff file → mark the session → path + restart prompt
+land the code → draft PR → handoff file → session title → roll-up entry → path + restart prompt
 ```
 
 Parked work is marked so it is visible at a glance — `[HANDOFF] ` on the PR title, and on the session title where the harness allows it. Every marker this skill applies carries an instruction for removing it, inside the handoff document, so the marks mean "still parked" rather than "was handed off once".
@@ -177,6 +177,10 @@ You are picking this up, so it is no longer parked. Before any other work:
    session, so you can rename it: list the user's other sessions, match on
    branch `<branch>` or PR #<n>, and set the title without `[HANDOFF] `.
    If nothing matches, say so and move on — do not hunt.
+3. Tick this handoff's checkbox in the roll-up:
+   `<absolute path to the day's roll-up document>`
+   Tick only the section titled `<session title>` — the other sections are
+   other people's parked work.
 
 This is not bookkeeping. A marker left in place says "nobody has picked this
 up", and once that is wrong the user cannot tell parked work from live work.
@@ -206,30 +210,76 @@ up", and once that is wrong the user cannot tell parked work from live work.
 - **Settled decisions get their reasoning.** Say why, and say plainly that reopening it is not wanted. Without the why, the next session relitigates it.
 - **Honest failure.** What is broken, what is unverified, what you ran out of time for, what you got wrong. A handoff that reads like a status report to a manager is worthless.
 
-## 4. Mark The Session
+## 4. Find The Session Title, And Mark The Session
 
-The same `[HANDOFF] ` prefix belongs on this chat session's title, so a session list shows at a glance which conversations have been parked and which are still live.
+You need this session's title twice: it is the heading of the roll-up entry in step 5, and the thing that gets the `[HANDOFF] ` prefix.
 
-**You almost certainly cannot do this yourself.** Session-management tools operate on *other* sessions: renaming requires a session id that is not the current one, and the session list excludes the current session, so an agent has no reliable way to name itself. Do not burn attempts on it. If your harness does expose a way to set the current session's title, use it and skip the rest of this step.
+**Reading it.** No tool returns it — session-management tools operate on *other* sessions, and the session list excludes the current one. In Claude Code on macOS the metadata is on disk:
 
-Otherwise, ask — in one line, at the end of your report, with the exact title to use:
+```bash
+grep -rl "$(git rev-parse --show-toplevel)" \
+  ~/Library/Application\ Support/Claude/claude-code-sessions/ 2>/dev/null
+```
+
+Each match is a JSON file with `sessionId`, `title`, `cwd`, `branch`, and `lastActivityAt`. Match on `cwd` and `branch`; when several sessions share a worktree, the current one is the most recent `lastActivityAt`. This is an internal path, not a supported API — if it is missing or the shape has changed, fall back to the branch name as the heading and say in your report that the title could not be read. Do not go hunting.
+
+**Setting it.** You cannot. The harness refuses a self-rename outright — *"Refusing to rename the current session from within itself"* — even given the correct session id. Do not spend attempts on it. Instead put one copy-ready line at the end of your report:
 
 ```text
 Rename this session to: [HANDOFF] <current title>
 ```
 
-Removing the marker later is not the user's job; the picking-up agent does it, per the instructions you put at the top of the handoff document.
+Removing the marker later is not the user's job; the picking-up agent does it, per the instructions at the top of the handoff document.
 
-## 5. Report Back
+## 5. Append To The Day's Handoff Roll-Up
+
+One document per day collects every handoff, so parked work can be found without remembering which plan it belonged to.
+
+```text
+<workspace-root>/_handoff/<YYYY-MM-DD> - Handoffs.md
+```
+
+`<workspace-root>` is the one resolved in step 3 — `<planning-root>/<repo-slug>/` for an external planning root, or `<repo-root>/docs/handoffs/` for the repo-local default. Local date. Create the directory and the file when they do not exist.
+
+**Append a section at the end. Never rewrite, reorder, or re-tick existing sections** — earlier entries belong to other sessions and may already be ticked.
+
+~~~md
+## <session title, from step 4>
+
+Created at <YYYY-MM-DD> @ <HHMM>
+
+- [ ] Tick here when handed off to new agent
+
+`<absolute path to the handoff file>`
+
+**Branch / PR:** `<branch>`, <push and tree state>, HEAD `<sha>`. Draft [PR #<n>](<full github url>) — <one clause on the PR's state>.
+
+**Restart prompt:**
+```
+<the same restart prompt you give in step 6>
+```
+~~~
+
+Details that matter:
+
+- **PR links are real Markdown links** to the full URL, not bare `#123`. Take the URL from `gh pr view --json url,number` rather than assembling it by hand.
+- **Keep the checkbox line verbatim.** It is the user's tracking mechanism, and the picking-up agent ticks it (see below).
+- **Write the restart prompt as flowing sentences separated by spaces**, not hard-wrapped lines. Copying out of a rendered Markdown block can drop newlines and glue words together — a prompt that survives that is worth more than one that looks tidy in the file.
+- If a section for this same session already exists in today's file — a second handoff on one day — append a new one rather than editing the old. Two entries is accurate history; one edited entry is not.
+
+Record the roll-up path in the handoff document's marker-clearing section, and add ticking the checkbox as the third thing the picking-up agent does.
+
+## 6. Report Back
 
 Finish with, in the chat:
 
 1. **The exact path to the handoff file.** Absolute, on its own line, so it can be clicked or copied without reconstruction.
-2. Branch, PR link with its `[HANDOFF] ` title, and draft state.
-3. What was committed — including anything committed as WIP with checks bypassed, called out explicitly.
-4. CI state as last observed, or that it was not checked.
-5. The session rename line from step 4, and anything else waiting on the user.
-6. **The restart prompt**, in a fenced block so it can be copied straight into a new session.
+2. **The path to the roll-up document**, and confirmation that the section was appended.
+3. Branch, PR link with its `[HANDOFF] ` title, and draft state.
+4. What was committed — including anything committed as WIP with checks bypassed, called out explicitly.
+5. CI state as last observed, or that it was not checked.
+6. The session rename line from step 4, and anything else waiting on the user.
+7. **The restart prompt**, in a fenced block so it can be copied straight into a new session.
 
 The restart prompt is short — two to four sentences. It does not reconstruct state; the handoff file does that. It names the file by absolute path, states the single next action, and mentions any decision the user still owes.
 
