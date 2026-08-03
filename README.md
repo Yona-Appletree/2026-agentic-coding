@@ -1,4 +1,4 @@
-# 2026 AI Teaching
+# 2026 Agentic Coding
 
 This repo contains a small set of agent workflow skills for teaching newer coders how to use AI coding agents with more structure.
 
@@ -9,8 +9,8 @@ The skills are plain Markdown files. They are written so you can point an agent 
 Copy and paste this into a terminal:
 
 ```bash
-git clone https://github.com/Yona-Appletree/2026-ai-teaching.git
-cd 2026-ai-teaching
+git clone https://github.com/Yona-Appletree/2026-agentic-coding.git
+cd 2026-agentic-coding
 ./install.sh
 ```
 
@@ -28,7 +28,7 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 Because the install is a symlink, updating is just:
 
 ```bash
-cd 2026-ai-teaching
+cd 2026-agentic-coding
 git pull
 ```
 
