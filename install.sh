@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install the yona-* skills into Claude Code's personal skills directory,
 # making them available as /yona-ux, /yona-plan, /yona-implement,
-# /yona-review, and /yona-ship in every project.
+# and /yona-ship in every project.
 #
 # Each skill is installed as a SYMLINK to its directory in this repo, so there
 # is exactly one editable copy of every skill. Edit the files here; `git pull`
@@ -26,6 +26,16 @@ case "${1:-}" in
 esac
 
 mkdir -p "$skills_dir"
+
+# Prune symlinks that point into this repo but whose skill no longer exists
+# (e.g. a skill was removed or renamed upstream).
+for target in "$skills_dir"/*; do
+  [[ -L "$target" ]] || continue
+  dest="$(readlink "$target")"
+  [[ "$dest" == "$repo_dir"/* && ! -f "$dest/SKILL.md" ]] || continue
+  rm "$target"
+  printf 'Removed stale skill link %s\n' "$target"
+done
 
 installed=()
 for src in "$repo_dir"/docs/skills/*/; do
