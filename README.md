@@ -21,7 +21,7 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 /yona-plan add user profiles to this app
 /yona-implement docs/plans/2026-06-09-user-profiles/plan.md
 /yona-review my current branch against main
-/yona-push
+/yona-ship
 /yona-handoff
 ```
 
@@ -41,7 +41,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 - `docs/skills/yona-plan/`: turns an idea into a concrete plan with declared review gates.
 - `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, records what happened, and archives the plan.
 - `docs/skills/yona-review/`: reviews a branch, PR, diff, or local changes and writes durable review notes.
-- `docs/skills/yona-push/`: pushes a branch that already has the work on it, creates or updates a GitHub PR, watches CI, and fixes focused CI failures.
+- `docs/skills/yona-ship/`: takes an implemented branch the rest of the way — gets the PR green, assembles an evidence-first ship report, stops at the ship gate when the plan declared one, then merges, deploys when configured, watches post-merge CI, and archives the plan.
 - `docs/skills/yona-handoff/`: hands unfinished work to another agent — lands and pushes everything, keeps it behind a draft PR, and writes a dated handoff document so the next agent can pick it up cold. Invoke it by hand when you decide to stop.
 
 Each skill is a directory containing `SKILL.md`, plus `references/` and `scripts/` where they help.
@@ -72,7 +72,7 @@ Use docs/skills/yona-review/SKILL.md to review my current branch against main.
 ```
 
 ```text
-Use docs/skills/yona-push/SKILL.md to push this branch, create a PR, and watch CI.
+Use docs/skills/yona-ship/SKILL.md to take this branch through merge and deploy.
 ```
 
 ```text
@@ -86,8 +86,8 @@ If your agent supports custom skills or commands directly, install or register t
 1. Start with `yona-plan` for anything bigger than a tiny fix.
 2. Review the plan with the human before implementation.
 3. Use `yona-implement` to execute the plan. It runs to the first review gate the plan declared, or to a pull request if the plan declared none.
-4. Use `yona-review` before merging, especially for risky changes.
-5. Use `yona-push` for a branch that already has the work on it but no PR yet.
+4. Use `yona-review` before merging when a change deserves a dedicated code review.
+5. Use `yona-ship` to take the finished PR through merge, deploy, and cleanup. It presents a ship report — the evidence you review instead of the diff — and stops for approval only when the plan declared a ship gate. It also covers the standalone case of a branch that has the work but no PR yet.
 6. Run `yona-handoff` yourself when you decide to move unfinished work to another agent. It pushes what exists behind a draft PR and writes down everything that only lived in the conversation.
 
 The point is not ceremony for its own sake. The point is to teach agents to leave useful artifacts behind: what was decided, what changed, how it was validated, and what still needs a human call.
@@ -99,6 +99,8 @@ The most common way this workflow goes wrong is an agent that stops every time i
 So the skills draw one line. `yona-plan` declares **review gates**: the specific points where a human needs to judge something, each with its questions written down. `yona-implement` then runs from the start of the plan to the first gate, and from the last gate to a pull request, without checking in anywhere else. A phase boundary is not a gate. A commit is not a gate. "Implementation is finished" is not a gate.
 
 The pull request is part of the pipeline, not a follow-up step. `yona-implement` opens it as a draft as soon as there is a first commit — before the work is done — so CI starts giving you signal early. It goes ready for review as soon as the work is feature-complete and no gate is pending, *whether or not CI is green*: draft tracks how complete the work is, not how the build is doing, and a finished PR parked in draft waiting for green is one you end up undrafting by hand. The agent keeps watching and fixing CI on the ready PR. If the plan ends at a gate, the PR stays draft and the handoff says so.
+
+The pipeline does not end at the PR either. Once agents write code at the quality you would, reading every diff stops being where your judgment pays off — reviewing *evidence* is. So `yona-ship` takes a green PR the rest of the way: it assembles a ship report (what changed in your terms, with links to CI runs, visual baselines, screenshots, ADRs, deviations, and follow-ups), stops at that report when the plan declared `ship_gate: required`, and on your `go` merges, deploys when configured, watches post-merge CI, and archives the plan. Small work declares `ship_gate: none` and merges on green without asking — invoking `yona-ship` is the authorization to merge.
 
 ## Where Artifacts Live
 
@@ -124,6 +126,17 @@ planning_root_env = "MY_PLANNING_ROOT"  # optional; this env var wins when set
 ```
 
 Plans then land in `<planning-root>/<repo-slug>/`, archives in `<planning-root>/<repo-slug>/_archive/`, and reviews in `<planning-root>/<repo-slug>/_reviews/`. With no config file, everything stays repo-local. The skills are identical either way — only the destination changes.
+
+The same file carries an optional `[ship]` section that tells `yona-ship` how this repo deploys:
+
+```toml
+[ship]
+deploy = "just studio-web-deploy"  # command run after merge; omit if CI deploys
+deploy_via_ci = true               # merging to the base branch triggers deploy via CI
+verify = "curl -sfo /dev/null https://example.com/healthz"
+```
+
+Without it, `yona-ship` still merges, watches post-merge CI, and cleans up — it just reports that deploy is not configured rather than inventing a procedure.
 
 Plans are meant to be active while work is in progress, then archived after implementation. Reviews can be kept while findings are being resolved, then archived once they are no longer active.
 

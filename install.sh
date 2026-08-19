@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install the yona-* skills into Claude Code's personal skills directory,
 # making them available as /yona-ux, /yona-plan, /yona-implement,
-# /yona-review, and /yona-push in every project.
+# /yona-review, and /yona-ship in every project.
 #
 # Each skill is installed as a SYMLINK to its directory in this repo, so there
 # is exactly one editable copy of every skill. Edit the files here; `git pull`
