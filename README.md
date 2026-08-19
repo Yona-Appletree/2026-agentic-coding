@@ -20,7 +20,6 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 /yona-ux explore layouts for the settings panel
 /yona-plan add user profiles to this app
 /yona-implement docs/plans/2026-06-09-user-profiles/plan.md
-/yona-review my current branch against main
 /yona-ship
 /yona-handoff
 ```
@@ -39,8 +38,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 - `docs/principles.md`: the way of working behind the skills — start here.
 - `docs/skills/yona-ux/`: explores UI/UX directions before planning — a self-contained HTML spike playground with several concepts side by side, ending at a visual review gate.
 - `docs/skills/yona-plan/`: turns an idea into a concrete plan with declared review gates.
-- `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, records what happened, and archives the plan.
-- `docs/skills/yona-review/`: reviews a branch, PR, diff, or local changes and writes durable review notes.
+- `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, and records what happened.
 - `docs/skills/yona-ship/`: takes an implemented branch the rest of the way — gets the PR green, assembles an evidence-first ship report, stops at the ship gate when the plan declared one, then merges, deploys when configured, watches post-merge CI, and archives the plan.
 - `docs/skills/yona-handoff/`: hands unfinished work to another agent — lands and pushes everything, keeps it behind a draft PR, and writes a dated handoff document so the next agent can pick it up cold. Invoke it by hand when you decide to stop.
 
@@ -49,9 +47,7 @@ Each skill is a directory containing `SKILL.md`, plus `references/` and `scripts
 The repo also includes empty directories for artifacts created by those workflows:
 
 - `docs/plans/`: active plans.
-- `docs/reviews/`: active review artifacts.
 - `docs/archive/plans/`: completed, cancelled, or superseded plans.
-- `docs/archive/reviews/`: resolved or obsolete reviews.
 
 ## Using Without Installing
 
@@ -65,10 +61,6 @@ Read docs/skills/yona-plan/SKILL.md and use it to create a plan for adding user 
 
 ```text
 Use docs/skills/yona-implement/SKILL.md to implement the plan in docs/plans/2026-06-09-user-profiles/plan.md.
-```
-
-```text
-Use docs/skills/yona-review/SKILL.md to review my current branch against main.
 ```
 
 ```text
@@ -86,9 +78,8 @@ If your agent supports custom skills or commands directly, install or register t
 1. Start with `yona-plan` for anything bigger than a tiny fix.
 2. Review the plan with the human before implementation.
 3. Use `yona-implement` to execute the plan. It runs to the first review gate the plan declared, or to a pull request if the plan declared none.
-4. Use `yona-review` before merging when a change deserves a dedicated code review.
-5. Use `yona-ship` to take the finished PR through merge, deploy, and cleanup. It presents a ship report — the evidence you review instead of the diff — and stops for approval only when the plan declared a ship gate. It also covers the standalone case of a branch that has the work but no PR yet.
-6. Run `yona-handoff` yourself when you decide to move unfinished work to another agent. It pushes what exists behind a draft PR and writes down everything that only lived in the conversation.
+4. Use `yona-ship` to take the finished PR through merge, deploy, and cleanup. It presents a ship report — the evidence you review instead of the diff — and stops for approval only when the plan declared a ship gate. It also covers the standalone case of a branch that has the work but no PR yet.
+5. Run `yona-handoff` yourself when you decide to move unfinished work to another agent. It pushes what exists behind a draft PR and writes down everything that only lived in the conversation.
 
 The point is not ceremony for its own sake. The point is to teach agents to leave useful artifacts behind: what was decided, what changed, how it was validated, and what still needs a human call.
 
@@ -110,10 +101,8 @@ By default the skills store their working artifacts inside the repo, which makes
 docs/
   skills/
   plans/
-  reviews/
   archive/
     plans/
-    reviews/
 ```
 
 If you would rather keep plans outside the repo — a personal notes directory, a shared drive, anywhere the repo should not carry them — add an `agent-context.toml` at the repo root:
@@ -125,7 +114,7 @@ planning_root = "~/notes/planning"
 planning_root_env = "MY_PLANNING_ROOT"  # optional; this env var wins when set
 ```
 
-Plans then land in `<planning-root>/<repo-slug>/`, archives in `<planning-root>/<repo-slug>/_archive/`, and reviews in `<planning-root>/<repo-slug>/_reviews/`. With no config file, everything stays repo-local. The skills are identical either way — only the destination changes.
+Plans then land in `<planning-root>/<repo-slug>/` and archives in `<planning-root>/<repo-slug>/_archive/`. With no config file, everything stays repo-local. The skills are identical either way — only the destination changes.
 
 The same file carries an optional `[ship]` section that tells `yona-ship` how this repo deploys:
 
@@ -138,11 +127,11 @@ verify = "curl -sfo /dev/null https://example.com/healthz"
 
 Without it, `yona-ship` still merges, watches post-merge CI, and cleans up — it just reports that deploy is not configured rather than inventing a procedure.
 
-Plans are meant to be active while work is in progress, then archived after implementation. Reviews can be kept while findings are being resolved, then archived once they are no longer active.
+Plans are meant to be active while work is in progress, then archived by `yona-ship` once the work lands.
 
 ## Notes For New Coders
 
-These skills work best when you ask the agent to show its work in files, not just in chat. A good planning file makes implementation easier. A good review file makes feedback less mysterious. A good completion log helps you remember what actually happened after the code is done.
+These skills work best when you ask the agent to show its work in files, not just in chat. A good planning file makes implementation easier. A good ship report makes the merge decision less mysterious. A good completion log helps you remember what actually happened after the code is done.
 
 ## License
 
