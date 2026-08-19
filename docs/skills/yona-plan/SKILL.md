@@ -209,6 +209,20 @@ Rules:
 
 If the repo documents its own handoff procedure (for example a `docs/process/review-gates.md`), reference it from the plan so the implementer follows it at each gate.
 
+### The Ship Gate
+
+Beyond the implementation gates, every plan declares whether **shipping** — merge and deploy, handled by `yona-ship` after implementation — needs the user's approval. Record it in `plan.md` frontmatter as `ship_gate: required | none` and as a line in the Gates section.
+
+The ship gate is not an implementation gate: it does not stop `yona-implement`, and it does not hold the PR in draft. It tells `yona-ship` whether to stop at the ship report (the evidence summary the user reviews instead of the diff) or to merge and deploy on green without checking in.
+
+Defaults by size, adjusted by judgment:
+
+- `sm` -> `ship_gate: none` — bug fixes, UI tweaks, mechanical work merge on green.
+- `md` / `lg` -> `ship_gate: required`.
+- Require it regardless of size when the plan expects an ADR, touches a migration or data format, changes a security surface, or triggers a first-of-its-kind deploy.
+
+Declaring `none` is cheap to get wrong in only one direction: `yona-ship` escalates to a gate on its own when the finished work created an ADR, deviated from the plan, or filed defects. So declare `none` freely for work that should flow, and `required` when human judgment about *shipping* — not correctness — is the point.
+
 ## Size-Specific Planning
 
 ### Small (`sm`)
@@ -221,7 +235,7 @@ Use one `plan.md`. Summarize:
 - Important data type, API, architecture, security, performance, embedded, or process changes.
 - Validation commands.
 - ADR expectation: `expected`, `possible`, or `none`.
-- Gates, usually `none — run to PR`.
+- Gates, usually `none — run to PR`, and the ship gate, usually `none — merge on green`.
 
 Do not create phase files unless discovery shows the work is actually medium.
 
@@ -281,6 +295,7 @@ status: active
 repo: <repo-slug>
 created: YYYY-MM-DD-HHMM
 adr: expected | possible | none
+ship_gate: required | none
 pr: pending
 ---
 ```
@@ -299,7 +314,7 @@ The `# H1` immediately below the frontmatter is the plan title. `yona-implement`
 - Architecture, data type, API, security, product, performance, embedded, or process decisions.
 - ADR expectations or candidates.
 - Validation strategy.
-- **Gates** — every gate with its questions, or `Gates: none — run to PR`.
+- **Gates** — every gate with its questions, or `Gates: none — run to PR`. End the section with the ship gate line: `Ship gate: required` or `Ship gate: none — merge on green`.
 - Phase table or one-shot implementation instructions.
 
 `status` starts as `active`. After implementation, `yona-implement` updates frontmatter to `status: done` plus `completed:`, `commit:`, and `pr:`.
@@ -371,10 +386,10 @@ Before stopping, tell the user:
 - Planning directory path.
 - Selected size and depth.
 - Files written.
-- Gates declared, or that there are none.
+- Gates declared, or that there are none, and the ship gate value.
 - Any unresolved assumptions.
 - Suggested next command, usually `yona-implement`.
 
-Say plainly that `yona-implement` will run to the first gate — or to a pull request if there are no gates — so the user knows what they are approving.
+Say plainly that `yona-implement` will run to the first gate — or to a pull request if there are no gates — and that `yona-ship` then takes the finished PR through merge and deploy, stopping at the ship report only when `ship_gate: required`. The user should know at planning time whether they will be asked again before the work lands.
 
 If implementation is requested, use the `yona-implement` workflow against the finished `plan.md`.

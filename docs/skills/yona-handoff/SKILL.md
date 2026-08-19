@@ -22,7 +22,7 @@ Run all four steps without checking in. There are no gates in this skill; the on
 ## Relationship To The Other Skills
 
 - `yona-implement` finishing a plan writes `_DONE.md` and archives the plan. That is completion, not handoff.
-- `yona-push` takes finished work to a green PR. It assumes local checks passed.
+- `yona-ship` takes finished work through a green PR to merge and deploy. It assumes local checks passed.
 - `yona-handoff` is the unfinished-work counterpart. Broken builds and red CI are expected input, not problems to solve. **Never archive a plan during a handoff** — the plan stays `status: active`.
 
 ## 1. Land The Code

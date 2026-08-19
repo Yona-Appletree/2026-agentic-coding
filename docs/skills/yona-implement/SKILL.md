@@ -12,9 +12,11 @@ Use this skill to execute an existing `plan.md` with disciplined validation.
 **The definition of done is a pushed pull request with CI watched — not a clean worktree, not a green local test run, not a commit.**
 
 ```text
-no gates:    plan → implement → validate → PR (draft → ready) → CI green
-with gates:  plan → implement → gate → implement → validate → PR (draft → ready) → CI green → gate
+no gates:    plan → implement → validate → PR (draft → ready) → CI green → ship
+with gates:  plan → implement → gate → implement → validate → PR (draft → ready) → CI green → gate → ship
 ```
+
+Merge, deploy, and plan archival belong to `yona-ship`, which runs after this pipeline ends. This skill never merges.
 
 Run from the start of the plan to the first declared gate. After a gate is answered, run from there to the next gate, or to the pull request. Do not check in at points that are not gates.
 
@@ -98,6 +100,8 @@ Red CI on complete work is a defect to fix on a ready PR, not a reason to withho
 Marking it ready is not the end of the pipeline. Keep watching CI and repairing it exactly as Push And Watch CI describes. Ready changes who can see the work; it does not change what you still owe.
 
 If the plan's last act is a gate, the PR stays draft and the handoff says so — the user marks it ready, or tells you to. Never mark a PR ready to satisfy a gate.
+
+The plan's `ship_gate` is not an implementation gate: it belongs to `yona-ship`, does not stop this pipeline, and does not hold the PR in draft.
 
 If the work later becomes unfinished again — a follow-up phase opens, or a handoff parks it — put it back to draft with `gh pr ready --undo`.
 
@@ -218,7 +222,7 @@ When a check fails:
 
 Stop and ask when the same check fails after two focused repair attempts without a new signal, when the failure depends on secrets, external services, permissions, or infrastructure state, or when fixing it would expand scope beyond the plan.
 
-Do not rebase, squash, merge the base branch, or rewrite commits unless the user asked or CI proves it is necessary. Do not merge the PR unless the user explicitly asks.
+Do not rebase, squash, merge the base branch, or rewrite commits unless the user asked or CI proves it is necessary. Do not merge the PR — merging belongs to `yona-ship`.
 
 ## ADRs
 
@@ -293,11 +297,7 @@ Do not rename `plan.md` or phase files after completion.
 
 ## Archive
 
-After `_DONE.md` is written, move the completed planning directory to the archive location resolved in Plan Location, preserving the basename. If a destination already exists, add a short suffix such as `-v2` rather than overwriting it.
-
-For repo-local planning, include the archive move in the implementation commit when possible. For an external planning workspace, the move is not part of the repo diff — just report it.
-
-Archive only when the plan is actually finished. A plan that stopped at a gate stays active.
+Do not archive the planning directory. A plan is finished when the work lands, not when the PR is ready — `yona-ship` archives it after the merge. The plan stays active, with `status: done` marking implementation as complete.
 
 ## Completion
 
@@ -310,5 +310,5 @@ Finish with:
 - Validation commands and results.
 - Documentation updated, or why no docs were needed.
 - ADRs created, or why none were warranted.
-- Archive path, if archived.
 - Any remaining follow-up work, or the gate questions if you stopped at a gate.
+- The next command: `yona-ship`, noting whether the plan declared `ship_gate: required` so the user knows whether they will be asked again before the work lands.
