@@ -36,7 +36,7 @@ If you find yourself exhausted after a day of agent work, this is usually the pr
 
 Keep planning and implementation separate. Not because process is virtuous, but because they fail differently.
 
-Planning is where the expensive mistakes live: wrong architecture, wrong scope, building the wrong thing. It's cheap to fix a plan and brutal to fix a codebase. So plan first, in prose, with the agent doing discovery — reading the code, surfacing questions, proposing answers — and you making the calls. Then implement against the finished plan, ideally in a fresh session whose only job is execution.
+Planning is where the expensive mistakes live: wrong architecture, wrong scope, building the wrong thing. It's cheap to fix a plan and brutal to fix a codebase. So plan first, in prose, with the agent doing discovery — reading the code, surfacing questions, proposing answers — and you making the calls. Then implement against the finished plan, ideally in a fresh session whose only job is execution. The fresh session doubles as a test: if the plan isn't enough for an agent that has read nothing else, the plan isn't done. And have the planning agent hand you that session — a one-click chip with the prompt already written — so starting it costs you nothing. Agents left to their own judgment will skip the chip and let you type the command; tell them not to.
 
 Mixing the two is the classic failure mode: you ask for a feature, the agent starts typing, and forty minutes later you're debugging an implementation of a design you never agreed to. The plan/implement split is what the `plan` and `implement` skills in this repo enforce. When I built my interview project in 36 minutes, the first five were planning — and those five minutes are why the other 31 worked.
 

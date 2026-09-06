@@ -39,7 +39,10 @@ Mythos-class model, tell the user plainly:
 > stronger concepts. I recommend re-running `/yona-ux` on one.
 
 Proceed only if the user says to continue anyway. Do not silently produce a
-weaker exploration.
+weaker exploration. If the harness has a spawn-task tool (`spawn_task` in
+Claude Code desktop), also create a chip that re-runs this exact request on
+a Mythos-class model, so switching is one click rather than a retyped
+prompt.
 
 ## Discovery
 
@@ -190,6 +193,21 @@ that change the interaction model, product behavior, or implementation cost.
 ## After the Spike: Production
 
 The converged spike is an input, never a starting codebase.
+
+Planning runs in a **new session**. The committed spike plus the chosen
+concept is the plan's whole input; the reasoning that picked the concept
+belongs in the spike's hint text and commit messages, and this session's
+context is full of the concepts that lost. So when the user has picked a
+direction and the last iteration round is committed, create the chip
+**without being asked**: the harness's spawn-task tool (`spawn_task` in
+Claude Code desktop) when it has one, plus the same prompt in a fenced
+block either way. The prompt stands alone — `yona-plan`, the spike path,
+the chosen concept by section number, the states and edge cases that
+became acceptance criteria, and the repo directory.
+
+Chip out-of-scope discoveries the same way: a bug in the production UI you
+reproduced while building the faithful copy, a state the current app
+mishandles. One chip each, the moment you notice it, not a note at the end.
 
 1. Run `yona-plan` for the production implementation. The plan should link
    the spike path and name the chosen concept; the spike's states and edge

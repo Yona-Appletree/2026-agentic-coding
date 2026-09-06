@@ -369,6 +369,8 @@ Usually do not create ADRs for straightforward feature implementation, bug fixes
 
 If useful ideas come up that are outside current scope, record them in `notes.md` under future work. Create a separate `future.md` only when the list becomes substantial enough to deserve its own file.
 
+Items concrete enough to start cold also get a chip at completion (see Chips). Vague ideas stay as notes.
+
 ## Implementation Log Convention
 
 Implementation completion is recorded in `_DONE.md` in the planning directory, not in `summary.md`.
@@ -388,8 +390,19 @@ Before stopping, tell the user:
 - Files written.
 - Gates declared, or that there are none, and the ship gate value.
 - Any unresolved assumptions.
-- Suggested next command, usually `yona-implement`.
+- The next step, as a chip (below).
 
 Say plainly that `yona-implement` will run to the first gate — or to a pull request if there are no gates — and that `yona-ship` then takes the finished PR through merge and deploy, stopping at the ship report only when `ship_gate: required`. The user should know at planning time whether they will be asked again before the work lands.
 
-If implementation is requested, use the `yona-implement` workflow against the finished `plan.md`.
+## Chips
+
+Implementation runs in a **new session** by default. `plan.md` and the phase files are supposed to be sufficient for an agent that has read only them, and a fresh session is the cheapest test of that — an agent that continues here fills the plan's gaps from conversation memory, and the gaps surface at the next handoff instead. A new session is also the only way to run a phase on the smaller model its `Model:` line asked for, or to run parallel phases at once. Stay in this session only when the user explicitly asked to implement here.
+
+So end by creating the chips, **without asking whether to**. A chip the user did not need costs one click to dismiss; a chip they had to ask for costs a round-trip.
+
+- One chip for `yona-implement`, with the absolute path to `plan.md` and the repo directory. For an `lg` plan: one chip per executable `sm` milestone, and one `yona-plan` chip per milestone that needs its own planning.
+- One chip per future-work item in `notes.md` that is concrete enough to start cold.
+
+Use the harness's spawn-task tool (`spawn_task` in Claude Code desktop, which shows a chip the user clicks to start a session) when it exists, and print every chip prompt in a fenced block as well so the handoff works without one. Every prompt stands alone: skill, absolute path, repo directory, one line of context.
+
+If implementation is requested in this session, use the `yona-implement` workflow against the finished `plan.md` instead of chipping it.

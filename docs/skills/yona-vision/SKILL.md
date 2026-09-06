@@ -148,8 +148,29 @@ table trustworthy later.
 - If you maintain persistent project memory, record the vision, its
   directory, the `D#`/`Q#` headlines, and the declared next step.
 - Report to the user: directory path, files written, decisions captured,
-  open questions, and the suggested next command. Then stop — a vision
-  session never rolls into spiking or planning on its own.
+  open questions, and the next step as a chip (below). Then stop — a
+  vision session never rolls into spiking or planning on its own.
+
+### Chip the next step
+
+The next step — the `yona-ux` spike or `yona-plan` — runs in a **new
+session**, not this one. `vision.md` exists to replace this conversation
+as the input to what follows, and an agent that reads only the file is
+the test of whether it does. This session's context is also the wrong
+shape for it: long, exploratory, full of arguments that are now settled.
+
+Hand the user that session with one click. If the harness has a
+spawn-task tool (`spawn_task` in Claude Code desktop, which shows a chip
+the user clicks to start a session), call it — once, for the declared
+next step, **without asking first**. The prompt must stand alone: the
+skill to invoke, the absolute path to `vision.md`, the repo directory,
+and one line on where the risk lives. Always also print the same prompt
+in a fenced block, for harnesses without chips.
+
+A chip is an offer, not an action. Creating one does not roll the
+session forward. Skipping it because "the user can type the command"
+does something worse — it moves the work of starting the next session
+onto the user, who then has to ask for the chip.
 
 ## Lifecycle
 
