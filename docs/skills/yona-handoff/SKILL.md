@@ -279,7 +279,7 @@ Finish with, in the chat:
 4. What was committed — including anything committed as WIP with checks bypassed, called out explicitly.
 5. CI state as last observed, or that it was not checked.
 6. The session rename line from step 4, and anything else waiting on the user.
-7. **The restart prompt**, in a fenced block so it can be copied straight into a new session.
+7. **The restart prompt**, in a fenced block so it can be copied straight into a new session — and, when the harness has a spawn-task tool (`spawn_task` in Claude Code desktop), also as a chip the user can click, created without asking.
 
 The restart prompt is short — two to four sentences. It does not reconstruct state; the handoff file does that. It names the file by absolute path, states the single next action, and mentions any decision the user still owes.
 

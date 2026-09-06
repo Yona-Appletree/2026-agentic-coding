@@ -116,6 +116,7 @@ For each work item:
 5. Record phase-level implementation results when phase files exist.
 6. Update relevant documentation when the change alters public behavior, workflows, architecture, commands, package/module purpose, configuration, operations, or planning/process conventions.
 7. Check for shortcuts: TODOs, stubbed logic, suppressed warnings, disabled tests, scope creep, stale docs, or unrelated refactors.
+8. Chip out-of-scope work the moment you notice it. A nearby defect, dead code, a missing test, a stale doc, a refactor the plan did not ask for: do not do it, and do not only note it. Call the harness's spawn-task tool (`spawn_task` in Claude Code desktop) with a self-contained prompt — repo directory, file paths, what is wrong, what done looks like — then continue. Record it under follow-ups in `_DONE.md` as well; the log is the record, the chip is how the user starts it without asking.
 
 If a phase says `sub-phases recommended`, decide whether to split before execution. If it says `sub-phases required`, split before execution.
 
@@ -312,3 +313,9 @@ Finish with:
 - ADRs created, or why none were warranted.
 - Any remaining follow-up work, or the gate questions if you stopped at a gate.
 - The next command: `yona-ship`, noting whether the plan declared `ship_gate: required` so the user knows whether they will be asked again before the work lands.
+
+## Chips
+
+Follow-ups get chips, every time, without asking. Any follow-up you would list in `_DONE.md` or the final response is one the user would otherwise have to hand-write a prompt for. When the harness has a spawn-task tool (`spawn_task` in Claude Code desktop), create one chip per follow-up — the ones chipped mid-implementation under Execution step 8 do not need a second chip — and print each prompt in a fenced block as well. Prompts stand alone: repo directory, paths, what is wrong or missing, what done looks like.
+
+`yona-ship` runs in **this** session — the PR, the branch, and the CI state are live here and cheap to keep — so it gets named as the next command, not chipped.
