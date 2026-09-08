@@ -20,6 +20,7 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 /yona-ux explore layouts for the settings panel
 /yona-plan add user profiles to this app
 /yona-implement docs/plans/2026-06-09-user-profiles/plan.md
+/yona-direct docs/plans/2026-06-09-emulator/plan.md
 /yona-ship
 /yona-blog write a post about the provider pattern
 /yona-handoff
@@ -40,6 +41,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 - `docs/skills/yona-ux/`: explores UI/UX directions before planning — a self-contained HTML spike playground with several concepts side by side, ending at a visual review gate.
 - `docs/skills/yona-plan/`: turns an idea into a concrete plan with declared review gates.
 - `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, and records what happened.
+- `docs/skills/yona-direct/`: runs a plan too big for one session — holds the vision across days, dispatches one sub-agent per milestone, decides most things itself including merges, and escalates only what has lasting consequences. Adds plain-language status updates and an AFK checklist so work keeps moving overnight.
 - `docs/skills/yona-ship/`: takes an implemented branch the rest of the way — gets the PR green, assembles an evidence-first ship report, stops at the ship gate when the plan declared one, then merges, deploys when configured, watches post-merge CI, and archives the plan.
 - `docs/skills/yona-blog/`: writes a technical blog post end to end — grounded discovery, an editorial brief with an approval gate, a leading example built before any prose, then drafting and revision in a plain professional register (see its `references/prose.md`), shipping through `yona-ship`.
 - `docs/skills/yona-handoff/`: hands unfinished work to another agent — lands and pushes everything, keeps it behind a draft PR, and writes a dated handoff document so the next agent can pick it up cold. Invoke it by hand when you decide to stop.
@@ -82,6 +84,8 @@ If your agent supports custom skills or commands directly, install or register t
 3. Use `yona-implement` to execute the plan. It runs to the first review gate the plan declared, or to a pull request if the plan declared none.
 4. Use `yona-ship` to take the finished PR through merge, deploy, and cleanup. It presents a ship report — the evidence you review instead of the diff — and stops for approval only when the plan declared a ship gate. It also covers the standalone case of a branch that has the work but no PR yet.
 5. Run `yona-handoff` yourself when you decide to move unfinished work to another agent. It pushes what exists behind a draft PR and writes down everything that only lived in the conversation.
+
+For a plan with several milestones that will run over days rather than hours, `yona-direct` sits above all of this: it holds the plan, dispatches steps 3 and 4 as sub-agents, and comes back to you only for the decisions you would have answered differently. Tell it you are going AFK and it lines the queue up to survive the night.
 
 The point is not ceremony for its own sake. The point is to teach agents to leave useful artifacts behind: what was decided, what changed, how it was validated, and what still needs a human call.
 
