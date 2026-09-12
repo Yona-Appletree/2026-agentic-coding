@@ -70,7 +70,10 @@ otherwise). It contains:
   as the negative image of the cold open"), not just its topic.
 - **Title and slug candidates.** Slugs are hard to change after
   publish — a rename needs redirects — so surface this decision now
-  even if it stays open until ship.
+  even if it stays open until ship. Pick a working slug here too and
+  title the session `blog: <slug>` per `yona-session`; the session slug
+  is the piece's stable name and need not match the URL slug the user
+  eventually settles on.
 - **Open decisions.** Anything genuinely the user's call.
 
 Then the gate: put each open decision to the user as a short, concrete

@@ -19,6 +19,7 @@ The user reviews evidence, not diffs. The center of this skill is the ship repor
 2. Resolve the planning workspace the way `yona-plan` does: `agent-context.toml` at the repo root for `repo_slug` / `planning_root` / `planning_root_env`, falling back to repo-local `docs/plans/`.
 3. Find the planning artifacts for this branch: the `Plan:` marker in the PR body, a `pr:` URL in a plan's frontmatter, or the plan the user named. Read `plan.md` (gates, ship gate, ADR expectations), `_DONE.md`, and the phase files' Implementation Result sections — these are the raw material of the ship report. Work without a plan is fine; the report is built from the diff and the PR instead.
 4. Read the `[ship]` section of `agent-context.toml` for deploy configuration (see Deploy).
+5. Title the session `ship: <slug>` per `yona-session`, from the plan's `slug:` — deriving one from the directory basename when the plan predates the field, or from the branch or PR title when there is no plan. When this session ran `yona-implement`, this is the stage change from `impl:` to `ship:`; the slug does not move.
 
 ## Get The PR Green
 

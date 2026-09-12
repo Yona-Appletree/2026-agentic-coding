@@ -31,6 +31,12 @@ Do not jump to proposing phases or milestones — that is `yona-plan`'s
 job, and a vision that arrives pre-phased locks in the first structure
 anyone typed.
 
+Do title the session, though. As soon as the subject is clear — usually
+the first exchange — pick the slug this work will carry through every
+later stage and rename the session `vision: <slug>`, per `yona-session`.
+The slug goes into `vision.md` frontmatter in stage 2, which is where
+the spike and the plan find it.
+
 ## Stage 1: The Conversation
 
 ### Ground in reality first
@@ -111,6 +117,7 @@ the vision doc should say so explicitly.
 kind: vision
 status: active
 repo: <repo-slug>
+slug: <slug>
 created: YYYY-MM-DD-HHMM
 next: <what follows — e.g. "ux-spike (yona-ux), then plan.md in this directory">
 ---
