@@ -24,6 +24,7 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 /yona-ship
 /yona-blog write a post about the provider pattern
 /yona-handoff
+/yona-session
 ```
 
 Because the install is a symlink, updating is just:
@@ -45,6 +46,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 - `docs/skills/yona-ship/`: takes an implemented branch the rest of the way — gets the PR green, assembles an evidence-first ship report, stops at the ship gate when the plan declared one, then merges, deploys when configured, watches post-merge CI, and archives the plan.
 - `docs/skills/yona-blog/`: writes a technical blog post end to end — grounded discovery, an editorial brief with an approval gate, a leading example built before any prose, then drafting and revision in a plain professional register (see its `references/prose.md`), shipping through `yona-ship`.
 - `docs/skills/yona-handoff/`: hands unfinished work to another agent — lands and pushes everything, keeps it behind a draft PR, and writes a dated handoff document so the next agent can pick it up cold. Invoke it by hand when you decide to stop.
+- `docs/skills/yona-session/`: the session-title convention — `<stage>: <slug>`, so the session list reads as an index of work rather than a list of opening prompts. The other skills apply it on entry; invoke it by hand for a session that started without one.
 
 Each skill is a directory containing `SKILL.md`, plus `references/` and `scripts/` where they help.
 
@@ -134,6 +136,19 @@ verify = "curl -sfo /dev/null https://example.com/healthz"
 Without it, `yona-ship` still merges, watches post-merge CI, and cleans up — it just reports that deploy is not configured rather than inventing a procedure.
 
 Plans are meant to be active while work is in progress, then archived by `yona-ship` once the work lands.
+
+## Session Titles
+
+Where the harness lets an agent rename its own session (Claude Code desktop does), the skills title each session `<stage>: <slug>` — `plan: esp32v3-emu`, then `impl: esp32v3-emu`, then `ship: esp32v3-emu` — so one piece of work is recognisable across sessions and stages at a glance. The slug is chosen once, at the first stage the work passes through, and recorded in the artifact's frontmatter (`slug:` in `vision.md` or `plan.md`) so later sessions reuse it instead of inventing another. Status stays out of the title; the sidebar already shows PR state.
+
+When several projects are active at once, an optional tag in the same `[agent]` section prefixes the slug:
+
+```toml
+[agent]
+project_tag = "lp"   # titles become "plan: lp/esp32v3-emu"
+```
+
+The full convention, including when a hand-written title is left alone, is `docs/skills/yona-session/SKILL.md`.
 
 ## Notes For New Coders
 

@@ -176,7 +176,8 @@ You are picking this up, so it is no longer parked. Before any other work:
 2. Strip the prefix from the session this came from. It is not your own
    session, so you can rename it: list the user's other sessions, match on
    branch `<branch>` or PR #<n>, and set the title without `[HANDOFF] `.
-   If nothing matches, say so and move on — do not hunt.
+   If nothing matches, say so and move on — do not hunt. Then title your
+   own session `<stage>: <slug>` per `yona-session`.
 3. Tick this handoff's checkbox in the roll-up:
    `<absolute path to the day's roll-up document>`
    Tick only the section titled `<session title>` — the other sections are
@@ -214,16 +215,15 @@ up", and once that is wrong the user cannot tell parked work from live work.
 
 You need this session's title twice: it is the heading of the roll-up entry in step 5, and the thing that gets the `[HANDOFF] ` prefix.
 
-**Reading it.** No tool returns it — session-management tools operate on *other* sessions, and the session list excludes the current one. In Claude Code on macOS the metadata is on disk:
+Read it with the harness's session tools — `get_session` on the literal id `self` — and set it with `set_session_title`, again on `self`:
 
-```bash
-grep -rl "$(git rev-parse --show-toplevel)" \
-  ~/Library/Application\ Support/Claude/claude-code-sessions/ 2>/dev/null
+```text
+[HANDOFF] <current title>
 ```
 
-Each match is a JSON file with `sessionId`, `title`, `cwd`, `branch`, and `lastActivityAt`. Match on `cwd` and `branch`; when several sessions share a worktree, the current one is the most recent `lastActivityAt`. This is an internal path, not a supported API — if it is missing or the shape has changed, fall back to the branch name as the heading and say in your report that the title could not be read. Do not go hunting.
+Never double-prefix a title that already carries the marker, and never replace the title — the marker is a prefix, exactly as on the PR. If the title is still the harness's automatic sentence rather than the `<stage>: <slug>` form from `yona-session`, fix that first, so the parked entry reads `[HANDOFF] impl: esp32v3-emu` and not `[HANDOFF] Continue the emulator work from yesterday`.
 
-**Setting it.** You cannot. The harness refuses a self-rename outright — *"Refusing to rename the current session from within itself"* — even given the correct session id. Do not spend attempts on it. Instead put one copy-ready line at the end of your report:
+If the harness has no session tools, use the branch name as the roll-up heading, say in your report that the title could not be read, and put one copy-ready line at the end of it:
 
 ```text
 Rename this session to: [HANDOFF] <current title>
@@ -278,7 +278,7 @@ Finish with, in the chat:
 3. Branch, PR link with its `[HANDOFF] ` title, and draft state.
 4. What was committed — including anything committed as WIP with checks bypassed, called out explicitly.
 5. CI state as last observed, or that it was not checked.
-6. The session rename line from step 4, and anything else waiting on the user.
+6. The session title as set in step 4 — or the rename line, when the harness could not set it — and anything else waiting on the user.
 7. **The restart prompt**, in a fenced block so it can be copied straight into a new session — and, when the harness has a spawn-task tool (`spawn_task` in Claude Code desktop), also as a chip the user can click, created without asking.
 
 The restart prompt is short — two to four sentences. It does not reconstruct state; the handoff file does that. It names the file by absolute path, states the single next action, and mentions any decision the user still owes.

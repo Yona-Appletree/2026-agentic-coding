@@ -24,6 +24,7 @@ Resolve where planning artifacts go before writing anything.
 repo_slug = "lp2025"
 planning_root = "~/.photomancer/planning"
 planning_root_env = "PHOTOMANCER_PLANNING_ROOT"  # optional; wins over planning_root when set
+project_tag = "lp"                               # optional; prefixes session titles, see yona-session
 ```
 
 3. Resolve the planning root, first match wins:
@@ -68,6 +69,8 @@ Do not create separate `plans/` or `roadmaps/` trees for new work. Use `plan.md`
 ## Formal Planning Start
 
 When the user asks to start planning, create the planning directory and `notes.md` immediately.
+
+Pick the slug at the same time: the stable name this work carries through every later stage (see `yona-session`). It is usually the `<name>` segment of the planning directory. When the directory already holds a `vision.md` with a `slug:`, reuse that one. Record it as `slug:` in `plan.md` frontmatter and title the session `plan: <slug>`.
 
 Use `notes.md` as the live discovery log. Include:
 
@@ -293,6 +296,7 @@ size: sm | md | lg
 depth: small | implementation | roadmap | program
 status: active
 repo: <repo-slug>
+slug: <slug>
 created: YYYY-MM-DD-HHMM
 adr: expected | possible | none
 ship_gate: required | none

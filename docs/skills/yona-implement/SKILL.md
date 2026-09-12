@@ -42,6 +42,7 @@ Read `plan.md` first. Inspect:
 
 - `size` and `depth`
 - the plan title (the `# H1` under the frontmatter) — this becomes the PR title
+- `slug` — this becomes the session title, `impl: <slug>` (see `yona-session`); when the plan predates the field, derive it from the directory basename and write it back
 - the `Gates` section — this is the list of legitimate stopping points
 - phase/work-item files: `p1-*.md`, `p09-*.md`, `m1-*.md`, `m09-*.md`, and legacy `01-*.md`
 - phase directories with their own `plan.md`
@@ -51,6 +52,8 @@ Read `plan.md` first. Inspect:
 - existing `_DONE.md`, if present
 
 Then read the repo's agent guides — `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, or nearby docs. Implementation must preserve repo-specific constraints and validation rules.
+
+Title the session `impl: <slug>` now, per `yona-session`, and say so in one line.
 
 If the plan is missing phase files but marks a work item as `sub-phases required`, write those sub-phase files before implementation.
 

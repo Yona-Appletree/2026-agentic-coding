@@ -48,6 +48,8 @@ If any is missing, derive it, write it into `plan.md`, and say in your first sta
 
 Also confirm, and write down if absent, **what the director may do while a human gate is held**. A plan that stalls entirely because one phase awaits review will burn a whole night. Name the work that continues during each hold at the moment you dispatch the gated phase, not when the hold begins.
 
+Then title the session `direct: <slug>` per `yona-session`, from the plan's `slug:`. Milestone agents are sub-agents, not sessions — they have no title to set.
+
 ## The Director Log
 
 Keep one file, `director-log.md`, in the planning directory. It holds:

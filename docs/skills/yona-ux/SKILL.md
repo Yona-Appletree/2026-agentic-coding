@@ -79,6 +79,11 @@ Keep the decision log in chat and in the spike itself (its hint text and
 commit messages). Do not create planning directories or `notes.md` files —
 that machinery belongs to `yona-plan`, which runs after the spike converges.
 
+Title the session `ux: <slug>` per `yona-session` as soon as the subject is
+clear. The slug is the `slug:` from `vision.md` when a vision exists for this
+work; otherwise it is the spike's `<short-name>`, which the plan then
+inherits.
+
 ## The Spike Playground
 
 Build one self-contained file:
