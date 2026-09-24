@@ -112,7 +112,7 @@ An agent that gets the conflict list resolves clean. An agent that finds it mid-
 
 ### Models
 
-Follow the plan's table. Two corrections from experience: the largest model is for phases whose failure mode is a *plausible wrong answer* — bring-up, undocumented hardware, subtle timing — and it is wasted on planning runs, where a mid-tier model writes the same files from the same discovery for a fraction of the tokens. Mechanical work with a strong oracle drops a rung.
+Follow the plan's table. Two corrections from experience: the top tier (`opus`, or `fable` as its peer) is for phases whose failure mode is a *plausible wrong answer* — bring-up, undocumented hardware, subtle timing — and it is wasted on planning runs, where a mid-tier model writes the same files from the same discovery for a fraction of the tokens. Mechanical work with a strong oracle drops a rung.
 
 ## Reading What Comes Back
 
