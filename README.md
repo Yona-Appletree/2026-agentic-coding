@@ -24,6 +24,8 @@ That symlinks the skills into `~/.claude/skills/`, so they are available in ever
 /yona-ship
 /yona-blog write a post about the provider pattern
 /yona-handoff
+/yona-auto-queue the watch-pr hint is wrong for stacked PRs
+/yona-auto-direct
 ```
 
 Because the install is a symlink, updating is just:
@@ -44,6 +46,8 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 - `docs/skills/yona-direct/`: runs a plan too big for one session — holds the vision across days, dispatches one sub-agent per milestone, decides most things itself including merges, and escalates only what has lasting consequences. Adds plain-language status updates and an AFK checklist so work keeps moving overnight.
 - `docs/skills/yona-ship/`: takes an implemented branch the rest of the way — gets the PR green, assembles an evidence-first ship report, stops at the ship gate when the plan declared one, then merges, deploys when configured, watches post-merge CI, and archives the plan.
 - `docs/skills/yona-blog/`: writes a technical blog post end to end — grounded discovery, an editorial brief with an approval gate, a leading example built before any prose, then drafting and revision in a plain professional register (see its `references/prose.md`), shipping through `yona-ship`.
+- `docs/skills/yona-auto-queue/`: files a small piece of work — a bug, a tidy-up, a follow-up — as one ticket in the repo's auto-queue (`<planning-root>/<repo-slug>/_auto/`), so the user can say "queue it" and stop tracking it.
+- `docs/skills/yona-auto-direct/`: the one director that works the auto-queue — triages tickets, sends each automatic one to a sub-agent, merges the safe ones on green one at a time under a strict never-automatic list, parks everything else with one yes/no question each, and writes a daily digest and a scorecard.
 - `docs/skills/yona-handoff/`: hands unfinished work to another agent — lands and pushes everything, keeps it behind a draft PR, and writes a dated handoff document so the next agent can pick it up cold. Invoke it by hand when you decide to stop.
 
 Each skill is a directory containing `SKILL.md`, plus `references/` and `scripts/` where they help.
