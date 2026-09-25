@@ -82,7 +82,7 @@ For `send`, write the full draft under `**Draft**`. For `plan` and for a `hands`
 
 Dispatch up to the README's **In flight** limit (start: one). Highest priority first; skip anything whose `scope:` overlaps an open PR's files — note the overlap in the log and try the next ticket.
 
-One `Agent` call per ticket, `isolation: worktree`, model `sonnet` for `fix` and `opus` for `investigate` unless the README says otherwise. The brief is, in order:
+One `Agent` call per ticket, `isolation: worktree` (when the director cannot run from the product checkout — a scheduled routine, a session opened elsewhere — the brief instead tells the agent to `git worktree add` its own under the product repo's `.claude/worktrees/`, and to remove it when pushed), model `sonnet` for `fix` and `opus` for `investigate` unless the README says otherwise. The brief is, in order:
 
 1. The ticket file, verbatim.
 2. `references/ticket-brief.md` from this skill, verbatim, with its placeholders filled.
@@ -103,7 +103,7 @@ A queue PR merges without the user only when **every** line holds. Check them me
 3. **Every file in the diff is inside the ticket's `scope:`.** One file outside it fails the check — that is the scope-creep guard, and it does not bend for "it was a tiny related tidy-up".
 4. The diff is within the README's size limit.
 5. **Nothing on the README's Never-automatic list is touched.** Run its tripwire commands against `git diff origin/main...<branch>` and quote the empty output in the log.
-6. The branch is up to date with main (`gh pr update-branch` if not), and every check on **that** head is green. A PR with no checks at all passes only if it touches nothing but Markdown outside the Never-automatic list.
+6. The branch is up to date with main (`gh pr update-branch` if not), and every check on **that** head is green. Only the latest run per check on the current head sha counts: an agent that pushes twice leaves a cancelled run behind whose checks read as failures (the pilot's first red was exactly this). A PR with no checks at all passes only if it touches nothing but Markdown outside the Never-automatic list.
 7. The agent reported no deviations and no test it could not run.
 
 All green → merge with the repo's method (see `yona-ship`), post a three-line comment on the PR (what, the evidence link, "merged by auto-direct under the queue's rules"), then follow `yona-ship`'s post-merge steps: watch the main run for the merge commit, and the deploy chain when the repo deploys on merge. Move the ticket to `05-done`, `outcome: merged`.

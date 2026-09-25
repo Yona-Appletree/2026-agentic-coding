@@ -40,6 +40,8 @@ why. That ticket is the user's, not yours.
 
 ## Proof
 
+- The full check is `<the repo's own pre-push gate, from _auto/README.md Limits>` plus the ticket's own command — never a stricter command you invent. The merge check reads CI, and CI runs the repo's gate.
+- A failure that is already on main in code you did not touch is **not yours**: quote the main sha and the line that proves it was there, list it under "Found", and do not fix or suppress it.
 - The ticket's **Done when** is the target. Name the command or CI check that
   proves it and quote its passing line.
 - Prefer a test that fails before your change and passes after. If one is
