@@ -116,7 +116,7 @@ For each work item:
 5. Record phase-level implementation results when phase files exist.
 6. Update relevant documentation when the change alters public behavior, workflows, architecture, commands, package/module purpose, configuration, operations, or planning/process conventions.
 7. Check for shortcuts: TODOs, stubbed logic, suppressed warnings, disabled tests, scope creep, stale docs, or unrelated refactors.
-8. Chip out-of-scope work the moment you notice it. A nearby defect, dead code, a missing test, a stale doc, a refactor the plan did not ask for: do not do it, and do not only note it. Call the harness's spawn-task tool (`spawn_task` in Claude Code desktop) with a self-contained prompt — repo directory, file paths, what is wrong, what done looks like — then continue. Record it under follow-ups in `_DONE.md` as well; the log is the record, the chip is how the user starts it without asking.
+8. Chip out-of-scope work the moment you notice it. A nearby defect, dead code, a missing test, a stale doc, a refactor the plan did not ask for: do not do it, and do not only note it. Call the harness's spawn-task tool (`spawn_task` in Claude Code desktop) with a self-contained prompt — repo directory, file paths, what is wrong, what done looks like — then continue. When the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`), file it there with `yona-auto-queue` instead of chipping it (bugs, debt, and tidy-ups only — a feature-level follow-up is still a chip) — the queue's director starts it, so the user does not have to. Record it under follow-ups in `_DONE.md` as well; the log is the record, the chip or ticket is how it gets started without the user asking.
 
 If a phase says `sub-phases recommended`, decide whether to split before execution. If it says `sub-phases required`, split before execution.
 
@@ -317,5 +317,7 @@ Finish with:
 ## Chips
 
 Follow-ups get chips, every time, without asking. Any follow-up you would list in `_DONE.md` or the final response is one the user would otherwise have to hand-write a prompt for. When the harness has a spawn-task tool (`spawn_task` in Claude Code desktop), create one chip per follow-up — the ones chipped mid-implementation under Execution step 8 do not need a second chip — and print each prompt in a fenced block as well. Prompts stand alone: repo directory, paths, what is wrong or missing, what done looks like.
+
+When the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`), bug, debt, and tidy-up follow-ups become tickets there via `yona-auto-queue`, not chips; list each ticket's path in the final response. Feature-level follow-ups are still chips.
 
 `yona-ship` runs in **this** session — the PR, the branch, and the CI state are live here and cheap to keep — so it gets named as the next command, not chipped.

@@ -96,7 +96,8 @@ When there is no `[ship]` section and no post-merge workflow runs, say deploy is
 - Update `plan.md` frontmatter with `merged: YYYY-MM-DD` and the merge SHA, plus `deployed: YYYY-MM-DD` when a deploy ran.
 - Archive the planning directory to the location `yona-plan` defines — this is ship's job, not implement's, because a plan is finished when the work lands, not when the PR opens. Preserve the basename; suffix `-v2` rather than overwrite.
 - File the report's follow-ups somewhere durable per the repo's conventions: the defect/debt register, new plan stubs, or the planning workspace's notes. Follow-ups that live only in the conversation do not exist.
-- Then chip every one of them, without asking. When the harness has a spawn-task tool (`spawn_task` in Claude Code desktop), create one chip per follow-up with a self-contained prompt: repo directory, the register entry or plan stub path, what is wrong or missing, what done looks like. Print each prompt in a fenced block as well. The filing is the record; the chip is what saves the user from writing that prompt themselves. A chip is not a substitute for filing.
+- When the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`), file the bugs, debt, and tidy-ups there with `yona-auto-queue` instead of chipping them, pointing at the register entry when there is one. The queue's director works them; the user never sees a chip.
+- Chip every remaining follow-up — all of them when there is no queue, and every feature-level one either way — without asking. When the harness has a spawn-task tool (`spawn_task` in Claude Code desktop), create one chip per follow-up with a self-contained prompt: repo directory, the register entry or plan stub path, what is wrong or missing, what done looks like. Print each prompt in a fenced block as well. The filing is the record; the chip is what saves the user from writing that prompt themselves. A chip is not a substitute for filing.
 
 ## Stop And Ask
 
@@ -130,6 +131,6 @@ Finish with:
 - Deploy status: command run and verify result with user-facing URL, `via CI` with the run link, or `not configured`.
 - Post-merge CI state on the base branch, with links.
 - Where the ship report lives (PR comment link).
-- Follow-ups filed and where, and the chips created for them.
+- Follow-ups filed and where, and the chips or queue tickets created for them.
 - Archive path of the planning directory, if archived.
 - Any remaining human action.
