@@ -142,7 +142,7 @@ After the final commit exists, update `Commit: pending` entries with the commit 
 
 Delegation must not default to the most capable model:
 
-- When delegating a work item to another agent, pass the phase's `Model:` suggestion via the agent `model` parameter. If the plan predates model suggestions, choose per the ladder `haiku -> sonnet -> opus -> fable`, defaulting to `opus` or the session model, whichever is smaller.
+- When delegating a work item to another agent, pass the phase's `Model:` suggestion via the agent `model` parameter. If the plan predates model suggestions, choose per the ladder `haiku -> sonnet -> opus` (`fable` is a peer of `opus`, not a rung above it), defaulting to `opus` or the session model, whichever is smaller.
 - Never delegate to a model larger than the current session model without asking the user first.
 - Read-only discovery/search delegations (locate files, summarize code) default to a small model regardless of the phase model.
 - Escalate one tier when a work item stalls: validation fails twice with the same error class or an unchanged hypothesis, or the delegated agent reports being blocked. Report each escalation and what triggered it.

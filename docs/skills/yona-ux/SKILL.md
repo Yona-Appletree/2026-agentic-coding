@@ -28,20 +28,20 @@ visual reference.
 UX spike quality is strongly model-dependent, more than most coding work:
 inventing distinct concepts, judging spatial composition, and writing dense
 hand-rolled CSS that actually looks good are where model tiers separate.
-At present, Mythos-class models (Claude Fable / Mythos) are far better at this
-than any other tier.
+At present, top-tier models (Claude Fable / Mythos, or Opus 5.5 and later)
+are far better at this than any other tier.
 
 Before doing anything else, check which model you are. If you are **not** a
-Mythos-class model, tell the user plainly:
+top-tier model, tell the user plainly:
 
 > UX spikes are the single most model-sensitive task in this workflow. I'm
-> running as `<model>`; a Mythos-class model (Fable) will produce noticeably
+> running as `<model>`; a top-tier model (Opus 5.5+ or Fable) will produce noticeably
 > stronger concepts. I recommend re-running `/yona-ux` on one.
 
 Proceed only if the user says to continue anyway. Do not silently produce a
 weaker exploration. If the harness has a spawn-task tool (`spawn_task` in
 Claude Code desktop), also create a chip that re-runs this exact request on
-a Mythos-class model, so switching is one click rather than a retyped
+a top-tier model, so switching is one click rather than a retyped
 prompt.
 
 ## Discovery

@@ -177,18 +177,18 @@ Map size to depth:
 
 Every phase gets a suggested execution model so implementation does not default to the most expensive agent. Record it in the phase table (`Model` column) and as a `Model:` line near the top of each phase file.
 
-Model ladder, smallest to largest: `haiku` -> `sonnet` -> `opus` -> `fable`.
+Model ladder, smallest to largest: `haiku` -> `sonnet` -> `opus`. `fable` is a peer of `opus`, not a rung above it: since Opus 5.5 (2026-09) the two are equals, and `opus` is the default top rung.
 
 Pick the smallest model whose plausible mistakes the phase's validation would catch cheaply:
 
 - `haiku`: mechanical, well-oracled work — renames, formatting, doc sweeps, config plumbing, running scripted validation.
 - `sonnet`: well-specified implementation where tests/compilers give fast trustworthy feedback and ambiguity is low.
-- `opus`: the default for ordinary implementation phases — multi-file changes, moderate ambiguity, design details left to the implementer.
-- `fable`: reserve for exploratory or debugging-heavy phases — undocumented APIs, hardware bring-up, subtle concurrency, or anywhere a wrong-but-plausible result would slip past validation. Fable tokens are scarce; a phase earns `fable` by failure mode, not by importance.
+- `opus`: the default for implementation phases, hard ones included — multi-file changes, design details left to the implementer, and exploratory or debugging-heavy work: undocumented APIs, hardware bring-up, subtle concurrency, or anywhere a wrong-but-plausible result would slip past validation.
+- `fable`: optional, equal to `opus`. Use it when the user prefers it or when a second model's attempt is worth having. No phase requires it.
 
 Rules:
 
-- Do not suggest a model larger than the model doing the planning. If a phase seems to genuinely need one, flag it in the phase table for the user to decide rather than suggesting it silently.
+- Do not suggest a model larger than the model doing the planning (`opus` and `fable` count as the same size). If a phase seems to genuinely need one, flag it in the phase table for the user to decide rather than suggesting it silently.
 - If validation is too weak to catch a smaller model's plausible mistakes, first try strengthening the validation (a better oracle or tighter tests often unlocks a smaller model); upgrade the model only when that fails.
 - For large plans, executable `sm` milestones carry a model like phases do; `md`/`lg` milestones get models when their own planning runs.
 
