@@ -67,7 +67,7 @@ For each ticket in `01-inbox/`, highest priority first, oldest first within a pr
 | `decide` | Needs a product, UX, or naming call | `00-yours` | the user, by answering yes or no |
 | `send` | Outward-facing: an upstream PR or issue, a post, a message | `00-yours` | the user; the director drafts, never sends |
 | `hands` | Needs hardware, a desk board, or a human looking at something | `00-yours` | the user |
-| `plan` | Too big for a ticket: more than one PR, or over the size limit | `00-yours` | the user, via `yona-plan` |
+| `plan` | Not queue work: a feature, more than one PR, or over the size limit | `00-yours` | the user, via `yona-plan` |
 
 For every `00-yours` ticket, write a `**For you**` section as the first thing in the body: one line saying why it is not automatic, then the one question, with your lean — `Change the palette row to sort by hue? Lean: yes — it matches the gallery.` A ticket in `00-yours` without a question is a defect of triage.
 

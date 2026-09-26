@@ -7,6 +7,8 @@ description: Put a small piece of work — a bug, a tidy-up, a follow-up, a nagg
 
 The user is drowning in small things: a flaky test noticed in passing, a stale doc, a follow-up a ship report named, a bug found mid-walk. Each one used to become a chip or a mental note. This skill turns one into a ticket file in a queue that `yona-auto-direct` works on its own, so the user can say "queue it" and stop thinking about it.
 
+**Bugs, debt, and tidy-ups only.** A defect, a flaky test, a stale doc, dead code, a missing test, a workaround that should be removed. Feature-level work — new behaviour, a new surface, anything a plan would describe as a feature — is not queue work; it stays a chip or a `yona-plan`. When in doubt, it is a feature.
+
 Filing is cheap and fast. It does **not** decide whether the work is automatic — the director (`yona-auto-direct`) does that at triage. Your job is to write a ticket another agent can act on cold.
 
 ## Where The Queue Lives

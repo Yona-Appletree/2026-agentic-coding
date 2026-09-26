@@ -401,7 +401,7 @@ Implementation runs in a **new session** by default. `plan.md` and the phase fil
 So end by creating the chips, **without asking whether to**. A chip the user did not need costs one click to dismiss; a chip they had to ask for costs a round-trip.
 
 - One chip for `yona-implement`, with the absolute path to `plan.md` and the repo directory. For an `lg` plan: one chip per executable `sm` milestone, and one `yona-plan` chip per milestone that needs its own planning.
-- One chip per future-work item in `notes.md` that is concrete enough to start cold. When the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`) and the item is small — one PR, no product call — file it there with `yona-auto-queue` instead; plan-sized items stay chips.
+- One chip per future-work item in `notes.md` that is concrete enough to start cold. When the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`) and the item is a small bug, debt, or tidy-up — one PR, no product call — file it there with `yona-auto-queue` instead. Feature work and plan-sized items stay chips.
 
 Use the harness's spawn-task tool (`spawn_task` in Claude Code desktop, which shows a chip the user clicks to start a session) when it exists, and print every chip prompt in a fenced block as well so the handoff works without one. Every prompt stands alone: skill, absolute path, repo directory, one line of context.
 
