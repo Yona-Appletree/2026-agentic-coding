@@ -1,6 +1,6 @@
 ---
 name: yona-auto-direct
-description: Work the repo's auto-queue — triage new tickets, send the ones that can be done automatically to one sub-agent each, merge the safe ones on green one at a time, park everything else where the user handles it in one sitting, and write a daily digest and scorecard. Use when the user says "work the queue", "run auto-direct", or on a schedule.
+description: Work the repo's auto-queue — triage new tickets, send the ones that can be done automatically to one sub-agent each, merge the safe ones on green one at a time, park everything else where the user handles it in one sitting, and write a daily digest and scorecard. Use when the user says "work the queue", "run auto-direct". Runs on demand; the user starts it and checks in.
 ---
 
 # Yona Auto-Direct
@@ -24,7 +24,7 @@ You are a director in the `yona-direct` sense. **You never edit product code and
 ## The Folders
 
 ```text
-00-deferred  not automatic — waiting on the user. Each ticket there says why and what it needs.
+00-yours     not automatic — waiting on the user. Each ticket there says why and what it needs.
 01-inbox     filed, not yet triaged. Only yona-auto-queue writes here.
 02-plan      automatic, being investigated
 03-impl      automatic, an agent is implementing it
@@ -32,7 +32,7 @@ You are a director in the `yona-direct` sense. **You never edit product code and
 05-done      finished: merged, dropped, or answered no
 ```
 
-**You are the only thing that moves tickets.** The user may also move them by hand, and a hand move is an instruction: into `01-inbox` means re-triage, into `05-done` means drop it, into `00-deferred` means not automatic. Respect what you find; never move it back.
+**You are the only thing that moves tickets.** The user may also move them by hand, and a hand move is an instruction: into `01-inbox` means re-triage, into `05-done` means drop it, into `00-yours` means not automatic. Respect what you find; never move it back.
 
 Every move appends one dated line to the ticket's `**Log**` section saying what and why. That log is how a later director, or the user, reconstructs the ticket without a conversation.
 
@@ -42,7 +42,7 @@ Do these in order. Each step is cheap when there is nothing to do.
 
 ### 1. Pick up answers
 
-Read every ticket in `00-deferred/` for an `answer:` in its frontmatter, and the latest digest for anything written after an `Answer:`. An answer is the user's decision — apply it exactly:
+Read every ticket in `00-yours/` for an `answer:` in its frontmatter, and the latest digest for anything written after an `Answer:`. An answer is the user's decision — apply it exactly:
 
 - `yes` to a question → the question's proposed change becomes the ticket's **Done when**; re-triage it (usually to `fix`).
 - `no` → `05-done`, `outcome: declined`.
@@ -64,18 +64,18 @@ For each ticket in `01-inbox/`, highest priority first, oldest first within a pr
 |---|---|---|---|
 | `fix` | Mechanical, clear **Done when**, a check in CI (or a named local command) that proves it, nothing on the Never-automatic list | `03-impl` | the director, merged on green |
 | `investigate` | The cause or the fix is unknown, and finding out needs no hardware and no product call | `02-plan` | the director; becomes a `fix`, or a question for the user |
-| `decide` | Needs a product, UX, or naming call | `00-deferred` | the user, by answering yes or no |
-| `send` | Outward-facing: an upstream PR or issue, a post, a message | `00-deferred` | the user; the director drafts, never sends |
-| `hands` | Needs hardware, a desk board, or a human looking at something | `00-deferred` | the user |
-| `plan` | Too big for a ticket: more than one PR, or over the size limit | `00-deferred` | the user, via `yona-plan` |
+| `decide` | Needs a product, UX, or naming call | `00-yours` | the user, by answering yes or no |
+| `send` | Outward-facing: an upstream PR or issue, a post, a message | `00-yours` | the user; the director drafts, never sends |
+| `hands` | Needs hardware, a desk board, or a human looking at something | `00-yours` | the user |
+| `plan` | Too big for a ticket: more than one PR, or over the size limit | `00-yours` | the user, via `yona-plan` |
 
-For every `00-deferred` ticket, write a `**For you**` section as the first thing in the body: one line saying why it is not automatic, then the one question, with your lean — `Change the palette row to sort by hue? Lean: yes — it matches the gallery.` A ticket in `00-deferred` without a question is a defect of triage.
+For every `00-yours` ticket, write a `**For you**` section as the first thing in the body: one line saying why it is not automatic, then the one question, with your lean — `Change the palette row to sort by hue? Lean: yes — it matches the gallery.` A ticket in `00-yours` without a question is a defect of triage.
 
 For `send`, write the full draft under `**Draft**`. For `plan` and for a `hands` ticket bigger than one walk, start a plan stub: a planning directory per `yona-plan` with just `notes.md` seeded from the ticket, and link it.
 
 ### 3. Advance what is in flight
 
-- **Agent reports.** Read each finished agent's result prose per `yona-direct` — a completion notification is not a completion. Log what it reported. A `fix` with a ready PR moves to `04-ship`. An `investigate` either becomes a `fix` (write its **Finding**, re-scope, move to `03-impl`) or goes to `00-deferred` with the finding and a question.
+- **Agent reports.** Read each finished agent's result prose per `yona-direct` — a completion notification is not a completion. Log what it reported. A `fix` with a ready PR moves to `04-ship`. An `investigate` either becomes a `fix` (write its **Finding**, re-scope, move to `03-impl`) or goes to `00-yours` with the finding and a question.
 - **The merge slot.** At most one queue PR merges at a time. Take the highest-priority ticket in `04-ship` and run the merge check below. Main moves many times a day under other directors; one serial slot is what keeps your merges from colliding with each other.
 
 ### 4. Dispatch
@@ -104,11 +104,11 @@ A queue PR merges without the user only when **every** line holds. Check them me
 4. The diff is within the README's size limit.
 5. **Nothing on the README's Never-automatic list is touched.** Run its tripwire commands against `git diff origin/main...<branch>` and quote the empty output in the log.
 6. The branch is up to date with main (`gh pr update-branch` if not), and every check on **that** head is green. Only the latest run per check on the current head sha counts: an agent that pushes twice leaves a cancelled run behind whose checks read as failures (the pilot's first red was exactly this). A PR with no checks at all passes only if it touches nothing but Markdown outside the Never-automatic list.
-7. The agent reported no deviations and no test it could not run.
+7. The agent reported no deviations and no test it could not run. A pre-existing problem the agent found — already on main, in code outside the diff — is **not** a deviation: confirm it against main yourself (the same command on `origin/main`, or the lines unchanged in the diff), then queue it with `yona-auto-queue` if it is worth fixing, and let the merge proceed.
 
 All green → merge with the repo's method (see `yona-ship`), post a three-line comment on the PR (what, the evidence link, "merged by auto-direct under the queue's rules"), then follow `yona-ship`'s post-merge steps: watch the main run for the merge commit, and the deploy chain when the repo deploys on merge. Move the ticket to `05-done`, `outcome: merged`.
 
-Any line fails → **do not merge and do not try to talk the check round.** Leave the PR ready, move the ticket to `00-deferred`, and ask: `Merge #901 (fixes the stale watch-pr hint)? It touched scripts/lib.sh, outside its scope. Lean: yes — the helper moved.` One failed line, named.
+Any line fails → **do not merge and do not try to talk the check round.** Leave the PR ready, move the ticket to `00-yours`, and ask: `Merge #901 (fixes the stale watch-pr hint)? It touched scripts/lib.sh, outside its scope. Lean: yes — the helper moved.` One failed line, named.
 
 ### When main goes red
 
@@ -122,7 +122,7 @@ One file per day: `_auto/_digest/YYYY-MM-DD.md`. A second pass the same day rewr
 # Queue — Friday 25 September
 
 **Needs you** (answer after each `Answer:` — yes / no / a sentence)
-1. Merge #901 (fixes the stale watch-pr hint)? It touched a file outside its scope. Lean: yes. [ticket](../00-deferred/2026-09-25-watch-pr-hint.md)
+1. Merge #901 (fixes the stale watch-pr hint)? It touched a file outside its scope. Lean: yes. [ticket](../00-yours/2026-09-25-watch-pr-hint.md)
    Answer:
 2. Sort the palette row by hue? Lean: yes — matches the gallery. [ticket](...)
    Answer:
@@ -145,7 +145,7 @@ Rules, the same ones `yona-direct` uses for status:
 - **Plain language, no ID recall.** Name the thing; the link carries the id.
 - **Every question is yes/no with a lean.** A question written as a paragraph goes unanswered.
 - **Never drop the Needs-you section.** When empty it says `Nothing — the queue is running.`
-- The waiting tickets are a count, not a list, unless something changed. They are already in `00-deferred`; repeating them daily is how a digest stops being read.
+- The waiting tickets are a count, not a list, unless something changed. They are already in `00-yours`; repeating them daily is how a digest stops being read.
 
 **Push notifications** only for a hard blocker: main red with your PR a suspect, a resource only the user can clear (disk, a credential), or a tripwire that fired after a merge. Never for a routine digest.
 
@@ -182,11 +182,11 @@ To find reverts, each pass: `git log origin/main --since=<last digest date> --gr
 
 ## Stop And Ask
 
-The director almost never stops: anything that needs the user goes into `00-deferred` and the digest, and the pass continues. Stop the whole pass only when:
+The director almost never stops: anything that needs the user goes into `00-yours` and the digest, and the pass continues. Stop the whole pass only when:
 
 - Main is red with your PR among the suspects.
 - The queue's README is missing, or contradicts itself on a merge rule.
-- The same ticket's agent has failed twice on the same cause — park the ticket in `00-deferred` with both reports first.
+- The same ticket's agent has failed twice on the same cause — park the ticket in `00-yours` with both reports first.
 - Something only the user can clear blocks every ticket (disk, auth).
 
 **This list is closed.** A ticket that needs a decision is not a reason to stop; it is a line in the digest.

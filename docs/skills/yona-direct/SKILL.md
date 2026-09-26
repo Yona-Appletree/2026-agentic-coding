@@ -206,7 +206,7 @@ When the plan completes, close it with: the ledger of decided versus raised with
 End by creating chips, without asking whether to:
 
 - One per milestone the plan leaves unstarted, with the absolute path to its file.
-- One per follow-up the milestones filed that nobody owns.
+- One per follow-up the milestones filed that nobody owns — or, when the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`), a ticket there via `yona-auto-queue` instead of a chip.
 - One to resume directing, with the absolute path to `director-log.md` and the repo directory, so a fresh session can pick up cold.
 
 Print every chip prompt in a fenced block as well, so the handoff works without the chip UI.
