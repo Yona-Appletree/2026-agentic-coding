@@ -177,14 +177,13 @@ Map size to depth:
 
 Every phase gets a suggested execution model so implementation does not default to the most expensive agent. Record it in the phase table (`Model` column) and as a `Model:` line near the top of each phase file.
 
-Model ladder, smallest to largest: `haiku` -> `sonnet` -> `opus` -> `fable`.
+Model ladder, smallest to largest: `haiku` -> `sonnet` -> `opus`. Use these tier aliases, never versioned model IDs — each alias tracks the latest model in its tier, so the ladder stays current as models ship. Tiers above `opus` are not part of the default ladder; suggest one only when the user asks.
 
 Pick the smallest model whose plausible mistakes the phase's validation would catch cheaply:
 
 - `haiku`: mechanical, well-oracled work — renames, formatting, doc sweeps, config plumbing, running scripted validation.
 - `sonnet`: well-specified implementation where tests/compilers give fast trustworthy feedback and ambiguity is low.
-- `opus`: the default for ordinary implementation phases — multi-file changes, moderate ambiguity, design details left to the implementer.
-- `fable`: reserve for exploratory or debugging-heavy phases — undocumented APIs, hardware bring-up, subtle concurrency, or anywhere a wrong-but-plausible result would slip past validation. Fable tokens are scarce; a phase earns `fable` by failure mode, not by importance.
+- `opus`: the default for ordinary implementation phases — multi-file changes, moderate ambiguity, design details left to the implementer — and for exploratory or debugging-heavy phases: undocumented APIs, hardware bring-up, subtle concurrency, or anywhere a wrong-but-plausible result would slip past validation.
 
 Rules:
 
@@ -336,7 +335,7 @@ Include:
 - Work item ID: `P#` for medium phases or `M#` for large milestones.
 - Scope of phase and explicit out-of-scope boundaries.
 - Size: usually `sm`; if `md` or `lg`, say whether another `yona-plan` run is required.
-- Suggested execution model: a `Model: haiku | sonnet | opus | fable` line (see Phase Agent Models).
+- Suggested execution model: a `Model: haiku | sonnet | opus` line (see Phase Agent Models).
 - Dependencies and parallelization notes.
 - Files/modules likely affected.
 - Docs likely affected and what should be updated, including nearby package/module `README.md` files.
