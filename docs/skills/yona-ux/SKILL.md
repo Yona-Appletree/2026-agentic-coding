@@ -117,8 +117,9 @@ in the target repo. Rules:
   the options, so "keep what we have" is comparable.
 - **Later rounds open with the page so far.** The whole surface as it
   stands, with every lean applied and labelled with the options it uses
-  ("uses Q1-A, Q2-B, Q3-B"). Then one `<h2>` section per open question: a
-  `Q2` badge, the question in one sentence, and its options.
+  ("uses Q1-A, Q2-B, Q3-B"). Then one section per open question
+  (`<section id="q2">`, so a link can land on it): a `Q2` badge, the
+  question in one sentence, and its options.
 - **Each option is a self-contained panel:** a big `Q2-B` label, a name of
   two to four words, one line on what it is, one line each of For and
   Against, and its render. Outline the lean and badge it "lean". Render only
@@ -165,12 +166,12 @@ Never hand over an unverified spike. In order of preference:
 
 Make the window height generous enough to capture the full page, read the PNG
 back, and actually look at it. Fix rendering problems before presenting.
-For the gate, capture **one screenshot per section** — the page so far, each
-question with all its options, the reference states — at 2× device scale
-(`--force-device-scale-factor=2`). A `?shot=<section-id>` query that hides
-every other section makes this a loop over section ids. One 4000px-tall
-image is evidence you rendered it, not something a human can review on a
-phone.
+Check **every section**: capture one screenshot per section — the page so
+far, each question with all its options, the reference states — at 2×
+device scale (`--force-device-scale-factor=2`) and look at each one. A
+`?shot=<section-id>` query that hides every other section makes this a loop
+over section ids. One 4000px-tall image only proves it rendered. These
+screenshots are your check, not the handoff: don't post them at the gate.
 
 ## Commit
 
@@ -189,18 +190,20 @@ usual commit-granularity preference.
 
 A spike always ends at a visual gate — this is a stop, not a status update.
 
-If the repo has its own review-handoff skill (in lp2025:
-`lp-review-handoff`), use it — it owns the mechanics of dev servers, links,
-and screenshot delivery. Either way the handoff must contain:
+The user reviews in the spike, not in chat: **the handoff is a link, not
+screenshots.** Screenshots posted to chat proved less useful than opening
+the page (Yona, 2026-10-08), so don't send them, even when a repo
+review-handoff skill (in lp2025: `lp-review-handoff`) would. The handoff
+contains:
 
-- **One screenshot per section** posted to chat (SendUserFile): each
-  question with all its labelled options, plus the page so far.
+- **A clickable link to the spike**: the `file://` URL of the committed
+  file, or the served URL when a server is needed. Each question's section
+  has an id, so a question can link straight to it (`index.html#q2`).
 - **The gate questions, numbered and lettered exactly as the spike's
   sections**, one line each, with the lean marked: "Q1 · The top of the
   page: A first card (lean) · B a stage". "Thoughts?" is not a gate
   question. Close with the one-line answer format: `Q1 A, Q2 B, …`.
 - **Your lean** per question, with its reason in a clause.
-- The `file://` path or served URL so the user can open the playground.
 
 Then stop. Do not begin production work, and do not start `yona-plan`, until
 the user has judged the gate.
