@@ -1,6 +1,6 @@
 ---
 name: yona-ux
-description: Explore UI/UX directions before planning by building a self-contained HTML spike playground — multiple concepts side by side in the app's own visual language — verifying it renders, committing it, and stopping at a visual gate. Use when asked to brainstorm, redesign, prototype, mock up, spike, or compare UI/UX directions for a feature, component, panel, or workflow.
+description: Explore UI/UX directions before planning by building a self-contained HTML spike playground — one section per gate question, lettered options side by side in the app's own visual language — verifying it renders, committing it, and stopping at a visual gate. Use when asked to brainstorm, redesign, prototype, mock up, spike, or compare UI/UX directions for a feature, component, panel, or workflow.
 ---
 
 # Yona UX
@@ -9,9 +9,10 @@ description: Explore UI/UX directions before planning by building a self-contain
 
 Use this skill to explore UI/UX directions **before** any planning or production
 work. The output is a disposable, self-contained HTML playground — a *spike* —
-that shows several distinct design concepts side by side, styled in the target
-app's own visual language, with live controls to exercise states. The spike is
-committed to the repo and the session stops at a visual gate for human judgment.
+that shows distinct design options side by side, styled in the target app's
+own visual language and organized as one section per gate question, so the
+user can answer in a line. The spike is committed to the repo and the session
+stops at a visual gate for human judgment.
 
 The pipeline position matters: `yona-ux` comes **before** `yona-plan`. A UI
 feature that starts with a plan tends to lock in the first layout anyone typed.
@@ -64,15 +65,16 @@ After initial discovery, present assumptions as a batched table in chat:
 ```md
 | ID | Question | Context | Suggested answer |
 |---|---|---|---|
-| Q1 | Keep the card as the unit of interaction? | Existing UI is card-based. | Yes |
-| Q2 | Optimize for repeat expert use? | This panel is opened constantly. | Yes |
+| A1 | Keep the card as the unit of interaction? | Existing UI is card-based. | Yes |
+| A2 | Optimize for repeat expert use? | This panel is opened constantly. | Yes |
 ```
 
 Tell the user they can answer `all yes`, `lgtm`, or specific overrides such as
-`Q2 no, first-run experience matters more`. Ask discussion-style questions —
+`A2 no, first-run experience matters more`. Ask discussion-style questions —
 ones that change the interaction model, information architecture, or scope —
-one at a time, visually set off with an `## Q3: …` heading and a suggested
-answer.
+one at a time, visually set off with an `## A3: …` heading and a suggested
+answer. (`A` for assumptions; `Q` numbers are kept for the spike's gate
+questions, below.)
 
 Keep the decision log in chat and in the spike itself (its hint text and
 commit messages). Do not create planning directories or `notes.md` files —
@@ -96,18 +98,41 @@ in the target repo. Rules:
   palette. If the spike doesn't look like the app, comparisons made on it
   don't transfer.
 - **Header:** an `<h1>` naming the exploration and a short `p.hint` paragraph
-  stating the design thesis — what is being explored and why.
-- **Exploration-controls strip:** a dashed-border strip near the top with
-  buttons/toggles that mutate the concepts live — cycle a status through its
-  states, toggle density, swap data sets, trigger the animation. Every state
-  the design must handle should be reachable from this strip, not just
-  described.
-- **Numbered sections** (`<h2>`) when the exploration covers multiple
-  surfaces, so gate feedback can reference "section 2".
-- **Concepts side by side.** 3–6 genuinely distinct concepts — different
-  structures and interaction models, not color or spacing variants. Include
-  the current production UX first (a faithful reproduction) when one exists,
-  so "keep what we have" is a comparable option.
+  stating the design thesis — what is being explored and why — and which
+  round this is.
+- **The spike is organized by question.** Every gate question in chat is one
+  section of the spike, with the same number and the same lettered options,
+  in the same order, so the user can answer in one line: `Q1 A, Q2 B, Q3 B`.
+  The user should never have to hunt for what a question refers to.
+- **No exploration-controls strip.** Don't build a strip of toggles that
+  swap data sets, cycle states or trigger events. Users don't drive it, and
+  an option that only appears after pressing the right buttons is an option
+  nobody compares. Render every state that matters statically, in the
+  section it belongs to. The product's own controls (a view switch, a menu,
+  a connect button) stay live inside the renders.
+- **Round 1 is usually one question: which structure?** `Q1` with 3–5
+  genuinely distinct concepts as its options (`Q1-A`, `Q1-B`, …) — different
+  structures and interaction models, not color or spacing variants. When
+  production already has this UX, a faithful reproduction of it is one of
+  the options, so "keep what we have" is comparable.
+- **Later rounds open with the page so far.** The whole surface as it
+  stands, with every lean applied and labelled with the options it uses
+  ("uses Q1-A, Q2-B, Q3-B"). Then one `<h2>` section per open question: a
+  `Q2` badge, the question in one sentence, and its options.
+- **Each option is a self-contained panel:** a big `Q2-B` label, a name of
+  two to four words, one line on what it is, one line each of For and
+  Against, and its render. Outline the lean and badge it "lean". Render only
+  the part of the surface the option changes, cropped, with the same data in
+  every option of the question, so the options differ in exactly one thing.
+  When the answer depends on a viewport or a mode the product has (phone
+  width, cards vs list), show both inside the option, side by side. Two or
+  three options per question, four at most.
+- **Numbers are never reused.** A question raised in a later round takes the
+  next number; answered questions leave the page, and their answers go into
+  a short "Decided so far" list at the bottom (round, question, answer).
+- **Reference states go last.** States that need no decision (empty,
+  welcome, signed out, error, phone width) sit in a final section that asks
+  nothing.
 - **Realistic content.** Real-looking names, IDs, log lines, and data pulled
   from or modeled on the actual app. Include the awkward cases: long names,
   empty states, errors, the offline device.
@@ -115,9 +140,12 @@ in the target repo. Rules:
   is "how does the card grow into an editor pane", the spike should animate
   the card growing into an editor pane.
 
-Exemplars (lp2025): `spikes/device-card-panel/index.html` and
-`spikes/hardware-boards/index.html`. When working in a repo with existing
-spikes, read one before writing yours and match its idiom.
+Exemplars (lp2025): `spikes/one-home-page/index.html` (round 2) is the
+question format. `spikes/device-card-panel/index.html` and
+`spikes/hardware-boards/index.html` are good palette and component sources,
+but they predate it and still use a controls strip. When working in a repo
+with existing spikes, read one before writing yours and match its visual
+idiom.
 
 ## Verify It Renders
 
@@ -125,7 +153,7 @@ Never hand over an unverified spike. In order of preference:
 
 1. **Browser pane** (`preview_start` with the `file://` URL or a static
    server, then `read_page` / screenshots): check for overflow, blank
-   sections, broken JS, and exercise the exploration controls.
+   sections, broken JS, and press the product controls inside the renders.
 2. **Headless Chrome screenshot** when no browser pane is available:
 
 ```bash
@@ -137,9 +165,12 @@ Never hand over an unverified spike. In order of preference:
 
 Make the window height generous enough to capture the full page, read the PNG
 back, and actually look at it. Fix rendering problems before presenting.
-Capture per-section crops or per-section screenshots for the gate — one
-4000px-tall image is evidence you rendered it, not something a human can
-review on a phone.
+For the gate, capture **one screenshot per section** — the page so far, each
+question with all its options, the reference states — at 2× device scale
+(`--force-device-scale-factor=2`). A `?shot=<section-id>` query that hides
+every other section makes this a loop over section ids. One 4000px-tall
+image is evidence you rendered it, not something a human can review on a
+phone.
 
 ## Commit
 
@@ -162,15 +193,14 @@ If the repo has its own review-handoff skill (in lp2025:
 `lp-review-handoff`), use it — it owns the mechanics of dev servers, links,
 and screenshot delivery. Either way the handoff must contain:
 
-- **Section screenshots** posted to chat (SendUserFile), cropped per concept
-  or per section, framed as a decision matrix when there are competing
-  options.
-- **Your lean**, stated explicitly: which concept you'd pick and why.
-- **Explicit gate questions**: what needs human judgment and what "pass"
-  looks like. "Thoughts?" is not a gate question. "Does the tab row belong
-  under the title bar (concept B) or on the right edge (concept C)?" is.
-- The `file://` path or served URL so the user can open the playground and
-  play with the controls themselves.
+- **One screenshot per section** posted to chat (SendUserFile): each
+  question with all its labelled options, plus the page so far.
+- **The gate questions, numbered and lettered exactly as the spike's
+  sections**, one line each, with the lean marked: "Q1 · The top of the
+  page: A first card (lean) · B a stage". "Thoughts?" is not a gate
+  question. Close with the one-line answer format: `Q1 A, Q2 B, …`.
+- **Your lean** per question, with its reason in a clause.
+- The `file://` path or served URL so the user can open the playground.
 
 Then stop. Do not begin production work, and do not start `yona-plan`, until
 the user has judged the gate.
@@ -179,11 +209,14 @@ the user has judged the gate.
 
 When the user reacts:
 
-1. Apply feedback directly in the spike — delete losing concepts or shrink
-   them to a small "rejected because…" strip if the contrast stays useful.
-2. Iterate the chosen direction in place: more states, edge cases, the
+1. Apply the answers: fold each chosen option into the page so far, delete
+   the answered sections, and add each answer to "Decided so far".
+2. Feedback that isn't a letter becomes a new question when it leaves a real
+   choice (the user's own wording makes good options), with the next number.
+   Decide small things yourself and say so in chat.
+3. Iterate the chosen direction in place: more states, edge cases, the
    interaction polish the user asked about.
-3. Commit each round; re-gate when the changes warrant judgment, otherwise
+4. Commit each round; re-gate when the changes warrant judgment, otherwise
    keep iterating in the same conversation.
 
 Make small design choices yourself; spend gate questions only on decisions
@@ -201,15 +234,15 @@ direction and the last iteration round is committed, create the chip
 **without being asked**: the harness's spawn-task tool (`spawn_task` in
 Claude Code desktop) when it has one, plus the same prompt in a fenced
 block either way. The prompt stands alone — `yona-plan`, the spike path,
-the chosen concept by section number, the states and edge cases that
-became acceptance criteria, and the repo directory.
+the answers (`Q1 A, Q2 B, …` and what each means), the states and edge
+cases that became acceptance criteria, and the repo directory.
 
 Chip out-of-scope discoveries the same way: a bug in the production UI you
 reproduced while building the faithful copy, a state the current app
 mishandles. One chip each, the moment you notice it, not a note at the end.
 
 1. Run `yona-plan` for the production implementation. The plan should link
-   the spike path and name the chosen concept; the spike's states and edge
+   the spike path and name the answers; the spike's states and edge
    cases become acceptance criteria and phase-gate questions.
 2. `yona-implement` executes the plan in the app's real framework, with real
    data flow, accessibility, and tests. Production code must never import
