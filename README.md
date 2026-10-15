@@ -40,7 +40,7 @@ There is exactly one copy of each skill — the one in this repo. Edit them here
 ## What Is In Here
 
 - `docs/principles.md`: the way of working behind the skills — start here.
-- `docs/skills/yona-ux/`: explores UI/UX directions before planning — a self-contained HTML spike playground with several concepts side by side, ending at a visual review gate.
+- `docs/skills/yona-ux/`: explores UI/UX directions before planning — a self-contained HTML spike playground, one section per gate question with lettered options, ending at a visual review gate.
 - `docs/skills/yona-plan/`: turns an idea into a concrete plan with declared review gates.
 - `docs/skills/yona-implement/`: executes a plan end to end — implements, validates, opens and drives a pull request, watches CI, and records what happened.
 - `docs/skills/yona-direct/`: runs a plan too big for one session — holds the vision across days, dispatches one sub-agent per milestone, decides most things itself including merges, and escalates only what has lasting consequences. Adds plain-language status updates and an AFK checklist so work keeps moving overnight.
