@@ -110,6 +110,8 @@ All green → merge with the repo's method (see `yona-ship`), post a three-line 
 
 Any line fails → **do not merge and do not try to talk the check round.** Leave the PR ready, move the ticket to `00-yours`, and ask: `Merge #901 (fixes the stale watch-pr hint)? It touched scripts/lib.sh, outside its scope. Lean: yes — the helper moved.` One failed line, named.
 
+Lines 3 and 4 (scope, size) are the one exception. They guard how much review a merge needs, not what a merge costs, and a merge on green is Undoable. When **only** line 3 or 4 fails, the extra files are an obvious consequence of the fix (a helper moved, a call site updated, a test grew), and every other line holds, merge. List it in the digest's **Done without you** as `Merged #901 past its scope: also touched scripts/lib.sh (the helper moved)`, and log `merged-past-scope` on the scorecard. A file that is not an obvious consequence still goes to `00-yours`.
+
 ### When main goes red
 
 If the main run after your merge goes red and your PR is among the suspects, **stop merging**: set the scorecard header to `paused — <reason>`, send a push notification, and put the question at the top of the digest. Reverting is the user's call, never yours. You stay paused until they say resume.
@@ -162,12 +164,14 @@ Automatic merges: **on** since 2026-09-25
 | 2026-09-25 | 2026-09-25-palette-sort | decide | asked → yes | | worth asking |
 ```
 
-Outcomes: `merged-alone`, `asked → yes|no`, `dropped`, `reverted`, `rerouted` (the user moved one of your tickets or changed its kind), `dry-run`. After the user answers a question, add whether it was worth asking — if they would have said yes to everything, you are asking too much.
+Outcomes: `merged-alone`, `merged-past-scope`, `asked → yes|no`, `dropped`, `reverted`, `rerouted` (the user moved one of your tickets or changed its kind), `dry-run`. After the user answers a question, note the **reason you asked** (the Never line or merge-check line, or `decide`) and whether the answer **matched your lean**. Not whether it was "worth asking" — a question can be about something important and still carry no information.
 
 It exists to move the Never-automatic line honestly:
 
 - **Any `reverted` or `rerouted`** → tighten at once. Add the specific pattern to the README's Never-automatic list, say so in the digest. Tightening is yours to do alone.
-- **Ten `merged-alone` in a row with no revert** → propose one specific widening as a digest question. **Never widen alone**: loosening your own rule after a good run is moving a rubric line to fit an outcome.
+- **Ten `merged-alone` in a row with no revert** → propose one specific widening as a digest question.
+- **Five `asked → yes` for the same reason, each matching your lean, and no revert among them** → propose narrowing or removing that Never line as the digest's first question, with the five rows linked. The user's yeses are the strongest evidence the queue gets that a line costs more than it saves; counting only merges made without asking ignores it.
+- **Never widen alone**: loosening your own rule after a good run is moving a rubric line to fit an outcome. A widening needs one yes in the digest; record it in the README with the date and the user's words, as the README's own amendments do.
 
 To find reverts, each pass: `git log origin/main --since=<last digest date> --grep '^Revert' --oneline`, matched against your PR titles.
 

@@ -61,7 +61,14 @@ That is the whole file. Do not also keep a timestamped journal — it duplicates
 
 ## The Escalation Rubric
 
-Decide alone and log a `DD#`. Raise only these:
+Decide alone and log a `DD#`. A category below is a reason to *consider* raising, not a reason to raise: raise when the user might plausibly answer differently from your lean. Two tests settle most cases:
+
+- **Is it Lasting?** A revert cannot put it back — persisted data or a format version written in the field, a protocol fielded devices or old clients depend on, deleting data, anything outward, spending money, or an item on the repo's own Lasting list. Lasting with any doubt → raise.
+- **Do you have a confident lean?** An Undoable call with a confident lean is a `DD#`, whatever its category: a merge on green, a minute of CI time, a public API or a wire format no fielded peer depends on, a file outside the files table. Log it and list it under "Decided without you" in the next status.
+
+E-reversal, E-target, E-ac, E-invariant, E-physical and E-other-PR are about the user's own bar, room or colleagues: raise those regardless. The rest raise only when the two tests say so.
+
+The categories:
 
 - **E-reversal** — reverses or materially extends a decision the plan settled.
 - **E-target** — changes an acceptance number, or the conditions under which one counts.
@@ -82,7 +89,7 @@ Four rules that cost more than the categories do:
 - **A decision made in an adverb is still a decision.** "Resolve the conflicts keeping both sides" is a content judgment delegated in a clause. Before a dispatch, re-read your own brief for the choices you smuggled into phrasing.
 - **Silence is not approval.** If you mention something in a status and get no reply, it is unanswered. Raise it properly or decide it and log it as yours.
 
-Track the ledger — decided versus raised, and whether the raised ones earned it. That ratio is the single most useful number for telling whether you are escalating too much or too little, and nothing else computes it.
+Track the ledger — decided versus raised, and for each raised item whether the user's answer **changed anything** (a different choice, a new condition) or matched your lean. That is the number, not your own judgment that it was "worth asking": a question can concern something important and still carry no information. When more than about two-thirds of what you raised came back as your lean, you are raising too much — from then on, decide that kind of question yourself, say so once in the status, and log it.
 
 ## Dispatch
 

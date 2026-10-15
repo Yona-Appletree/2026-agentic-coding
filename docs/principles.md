@@ -78,6 +78,8 @@ The fence has to be closed on both sides, though, and this is the half people fo
 
 That's what makes the gates from principle 2 worth designing: they only save your attention if they're the *only* things that spend it.
 
+Then price each stop by what a wrong call costs, not by what it touches. I sort actions three ways: *routine* (just do it), *undoable* (a revert puts it back — do it and tell me), and *lasting* (a revert can't — ask). Category lists drift toward asking: "it touches the wire format", "it costs a CI minute", "it's a merge". Each sounds serious, and I said yes to nearly every one. When I counted, one queue had asked me about ninety-five questions and I had said no to none. A question with an obvious answer isn't caution. It's a round trip, and it buries the questions that matter. So the skills now ask only about lasting things, product direction, and calls where the agent has no confident lean. Everything else ships, with a list I can skim of what the agent decided without me.
+
 ## 8. Steal from industry
 
 Software engineering process — code review, ADRs, conventional commits, CI gates, issue tracking, postmortems — represents millions of human-hours spent learning to coordinate fast-moving, imperfect, partially-informed agents. Those agents were called "people." The lessons transfer almost unchanged.

@@ -5,7 +5,7 @@ description: Take an implemented branch the rest of the way — get the pull req
 
 # Yona Ship
 
-Use this skill when the work is implemented and needs to reach the base branch — and production, when the repo deploys.
+Use this skill when the work is implemented and needs to reach the base branch — and production, when the repo deploys. `yona-implement` runs it on its own when its pipeline ends with no gate pending.
 
 `yona-implement` ends at a ready PR with CI watched. This skill owns everything after: the ship report, the ship gate, the merge, the deploy, post-merge CI, and cleanup. It also absorbs the standalone push case — a branch that has the work but no PR yet starts at Get The PR Green below.
 
@@ -40,6 +40,7 @@ Sections, in order:
 - **Evidence** — direct links: the CI run for the head commit, changed visual baselines (story/snapshot images) with before/after when they changed, screenshots for anything visual, validation output for anything the user asked to be sure of. Post images inline in the conversation as well as linking them, so the gate can be answered from a phone.
 - **ADRs** — created this branch, with paths, or `none`.
 - **Deviations and defects** — deviations from the plan, defects filed during implementation against the repo's register, or `none`.
+- **Decided without you** — calls made alone, here or during implementation, that the user might have made differently; one line each, or `none`. This is where an Undoable question that was never asked gets read.
 - **Follow-ups** — suggested next work, each one line and actionable, or `none`.
 - **Deploy plan** — what happens after merge (post-merge CI, deploy command, nothing), what healthy looks like, and how it would be rolled back. `not configured` is a valid answer; say it.
 
@@ -50,9 +51,11 @@ Post the report as a PR comment so it is durable next to the merge, and in the c
 Whether to stop at the report is decided in two layers:
 
 1. **The plan declares it.** `yona-plan` records `ship_gate: required | none` in `plan.md` frontmatter. Honor it.
-2. **Escalation overrides `none`.** Gate anyway when the work created an ADR, touched a migration/data format/schema, recorded deviations from the plan, filed defects, performs a first-of-its-kind deploy, or does anything irreversible beyond the merge itself.
+2. **Escalation overrides `none` — for Lasting work only.** Gate anyway when the finished work does something a revert cannot put back that the plan did not already approve: a migration, or a persisted data or format version written in the field; a protocol that fielded devices or old clients depend on; deleting data; a first-of-its-kind deploy to a new target; anything sent outside the repo; an item on the repo's own Lasting list (its agents file names them). Also gate when a deviation reverses a decision the plan settled with the user.
 
-With no plan at all: gate unless the change is genuinely small — a bug fix, a copy or UI tweak, a doc change — where the two-layer test would obviously say `none`.
+ADRs, ordinary deviations, and defects filed are **records, not gates**: they go in the report, where the user reads them after the merge. A merge on green is Undoable — a revert puts it back — so it does not need a go.
+
+With no plan at all: the same test. Merge on green unless the change does something Lasting.
 
 At the gate: post the report, state the question in one line so `go` is a sufficient reply — usually `Merge and deploy? Evidence above.` — and stop. Never merge to satisfy a gate; never soften the report to avoid one.
 
@@ -116,6 +119,7 @@ Pause and hand back when:
 In particular, do not stop to:
 
 - ask whether to merge when no gate holds — invoking the skill answered that
+- gate on an ADR, a deviation, or a defect filed — the report carries them
 - ask whether to deploy when `[ship]` declares it
 - announce the report and wait when no gate holds
 - ask whether to keep watching CI, before or after the merge

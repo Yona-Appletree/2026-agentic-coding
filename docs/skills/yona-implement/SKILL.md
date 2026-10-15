@@ -16,7 +16,7 @@ no gates:    plan → implement → validate → PR (draft → ready) → CI gre
 with gates:  plan → implement → gate → implement → validate → PR (draft → ready) → CI green → gate → ship
 ```
 
-Merge, deploy, and plan archival belong to `yona-ship`, which runs after this pipeline ends. This skill never merges.
+Merge, deploy, and plan archival belong to `yona-ship`. This skill does not merge by itself: when the pipeline ends with no gate pending, run `yona-ship` straight away in this session. It stops at the ship report only when the plan declared `ship_gate: required` or the work did something Lasting; otherwise it merges on green. Do not hand the user `yona-ship` as a next command to type.
 
 Run from the start of the plan to the first declared gate. After a gate is answered, run from there to the next gate, or to the pull request. Do not check in at points that are not gates.
 
@@ -159,7 +159,7 @@ Pause and hand back when:
 - Fixing an issue would expand scope or change public APIs beyond the plan.
 - A hard bug appears that needs real debugging and a decision about how far to chase it.
 - The planning root or requested plan path cannot be resolved.
-- An action needs human authority: a destructive operation, a merge, a release, anything outside the repo.
+- An action is **Lasting** — a revert cannot put it back: persisted data or a format version written in the field, a protocol fielded devices or old clients depend on, deleting data, anything sent outside the repo, spending money, or an item on the repo's own Lasting list. Undoable actions (a merge on green, a deploy that rides it, code and docs) are not on this list; `yona-ship` owns the merge.
 
 **This list is closed. If the reason you are about to stop is not on it, keep going.**
 
@@ -172,6 +172,8 @@ In particular, do not stop to:
 - ask whether to mark the PR ready — the Draft Or Ready rule already answers it
 - hold a feature-complete PR in draft until CI goes green — readiness does not wait on the build
 - wait out a CI run you could be watching
+- ask whether to run `yona-ship` — the pipeline runs it
+- ask a question you would end with "Lean: yes" about something a revert can undo — decide it, and list it under "Decided without you" in the completion
 
 When you do stop, state the single next action in one line, so that `go` is a sufficient reply.
 
@@ -312,7 +314,8 @@ Finish with:
 - Documentation updated, or why no docs were needed.
 - ADRs created, or why none were warranted.
 - Any remaining follow-up work, or the gate questions if you stopped at a gate.
-- The next command: `yona-ship`, noting whether the plan declared `ship_gate: required` so the user knows whether they will be asked again before the work lands.
+- Decided without you: the calls you made alone that the user might have made differently, one line each, or `none`.
+- Then run `yona-ship` in this session. Its completion is the end of the turn: merged and deployed, or stopped at its ship report with one question.
 
 ## Chips
 
@@ -320,4 +323,4 @@ Follow-ups get chips, every time, without asking. Any follow-up you would list i
 
 When the repo has an auto-queue (`<planning-root>/<repo-slug>/_auto/`, see `yona-auto-queue`), bug, debt, and tidy-up follow-ups become tickets there via `yona-auto-queue`, not chips; list each ticket's path in the final response. Feature-level follow-ups are still chips.
 
-`yona-ship` runs in **this** session — the PR, the branch, and the CI state are live here and cheap to keep — so it gets named as the next command, not chipped.
+`yona-ship` runs in **this** session, right after this pipeline — the PR, the branch, and the CI state are live here and cheap to keep — so it is neither chipped nor named as a command for the user to type.
