@@ -86,7 +86,7 @@ If your agent supports custom skills or commands directly, install or register t
 1. Start with `yona-plan` for anything bigger than a tiny fix.
 2. Review the plan with the human before implementation.
 3. Use `yona-implement` to execute the plan. It runs to the first review gate the plan declared, or to a pull request if the plan declared none.
-4. Use `yona-ship` to take the finished PR through merge, deploy, and cleanup. It presents a ship report — the evidence you review instead of the diff — and stops for approval only when the plan declared a ship gate. It also covers the standalone case of a branch that has the work but no PR yet.
+4. Use `yona-ship` to take the finished PR through merge, deploy, and cleanup. `yona-implement` starts it on its own when no gate is pending. It presents a ship report — the evidence you review instead of the diff — and stops for approval only when the plan declared a ship gate or the work did something Lasting. It also covers the standalone case of a branch that has the work but no PR yet.
 5. Run `yona-handoff` yourself when you decide to move unfinished work to another agent. It pushes what exists behind a draft PR and writes down everything that only lived in the conversation.
 
 For a plan with several milestones that will run over days rather than hours, `yona-direct` sits above all of this: it holds the plan, dispatches steps 3 and 4 as sub-agents, and comes back to you only for the decisions you would have answered differently. Tell it you are going AFK and it lines the queue up to survive the night.
@@ -101,7 +101,19 @@ So the skills draw one line. `yona-plan` declares **review gates**: the specific
 
 The pull request is part of the pipeline, not a follow-up step. `yona-implement` opens it as a draft as soon as there is a first commit — before the work is done — so CI starts giving you signal early. It goes ready for review as soon as the work is feature-complete and no gate is pending, *whether or not CI is green*: draft tracks how complete the work is, not how the build is doing, and a finished PR parked in draft waiting for green is one you end up undrafting by hand. The agent keeps watching and fixing CI on the ready PR. If the plan ends at a gate, the PR stays draft and the handoff says so.
 
-The pipeline does not end at the PR either. Once agents write code at the quality you would, reading every diff stops being where your judgment pays off — reviewing *evidence* is. So `yona-ship` takes a green PR the rest of the way: it assembles a ship report (what changed in your terms, with links to CI runs, visual baselines, screenshots, ADRs, deviations, and follow-ups), stops at that report when the plan declared `ship_gate: required`, and on your `go` merges, deploys when configured, watches post-merge CI, and archives the plan. Small work declares `ship_gate: none` and merges on green without asking — invoking `yona-ship` is the authorization to merge.
+The pipeline does not end at the PR either. Once agents write code at the quality you would, reading every diff stops being where your judgment pays off — reviewing *evidence* is. So `yona-ship` takes a green PR the rest of the way: it assembles a ship report (what changed in your terms, with links to CI runs, visual baselines, screenshots, ADRs, deviations, and follow-ups), stops at that report when the plan declared `ship_gate: required` or the work turned out to do something Lasting, and on your `go` merges, deploys when configured, watches post-merge CI, and archives the plan. Most plans declare `ship_gate: none` and merge on green without asking — invoking `yona-ship` is the authorization to merge, and `yona-implement` runs it for you when no gate is pending.
+
+## Asking: Routine, Undoable, Lasting
+
+Most of what agents ask a person is answered yes. A question with an obvious answer still costs a round trip, and a stream of them buries the few that matter. So every skill sorts an action by what it costs if the agent gets it wrong:
+
+- **Routine** — editing, committing, pushing, opening and readying PRs, watching CI. Do it.
+- **Undoable** — a revert or a re-run puts it back: merging a PR whose CI is green, a deploy that rides that merge, a change to code, docs, CI, a public API, or a wire format no fielded peer depends on. Do it, and say what you did in the report.
+- **Lasting** — a revert cannot put it back: persisted data and format versions already written in the field, protocols that fielded devices or old clients depend on, deleting data, anything sent outside the repo (posts, issues, other people's repos, messages), spending money. Ask.
+
+Two more things reach the person whatever their cost: product or UX direction the plan did not settle, and a call where the agent has no confident lean. Everything else is a decision, not a question. **A question that would end "Lean: yes" about an Undoable action is a decision already made**: make it, and list it under "Decided without you" so the person can skim it. A repo names its own Lasting items in its agents file; the skills read that list and add to this one, never subtract.
+
+The rule has a feedback loop. Where the skills keep a record of what they asked — a director's ledger, the auto-queue's scorecard — a run of yeses that matched the lean is the signal to stop asking that kind of question.
 
 ## Where Artifacts Live
 

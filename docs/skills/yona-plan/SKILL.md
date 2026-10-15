@@ -205,6 +205,7 @@ Rules:
 - Prefer an end-of-phase gate with specific questions over a dedicated review-only phase.
 - Design phase boundaries to minimize gates. Group decisions that need human judgment early or at natural boundaries so later work can run without mid-plan user input.
 - Include a gate only when warranted by product, API, architecture, security, migration, UX, or scope judgment. "Check my work" is not a gate; validation and code review cover that.
+- Include a gate only when the user might plausibly answer differently from your lean. A question you would write as "Lean: yes" about something a revert can undo is not a gate: settle it in the plan as a decision marked yours, where the user sees it at plan approval, and keep going.
 
 If the repo documents its own handoff procedure (for example a `docs/process/review-gates.md`), reference it from the plan so the implementer follows it at each gate.
 
@@ -214,13 +215,19 @@ Beyond the implementation gates, every plan declares whether **shipping** — me
 
 The ship gate is not an implementation gate: it does not stop `yona-implement`, and it does not hold the PR in draft. It tells `yona-ship` whether to stop at the ship report (the evidence summary the user reviews instead of the diff) or to merge and deploy on green without checking in.
 
-Defaults by size, adjusted by judgment:
+The default at every size is `ship_gate: none`: merging a PR whose CI is green is Undoable — a revert puts it back — and the ship report records what landed for the user to read afterwards.
 
-- `sm` -> `ship_gate: none` — bug fixes, UI tweaks, mechanical work merge on green.
-- `md` / `lg` -> `ship_gate: required`.
-- Require it regardless of size when the plan expects an ADR, touches a migration or data format, changes a security surface, or triggers a first-of-its-kind deploy.
+Declare `ship_gate: required` only when shipping does something **Lasting** — what a revert cannot put back:
 
-Declaring `none` is cheap to get wrong in only one direction: `yona-ship` escalates to a gate on its own when the finished work created an ADR, deviated from the plan, or filed defects. So declare `none` freely for work that should flow, and `required` when human judgment about *shipping* — not correctness — is the point.
+- a migration, or a persisted data or format version written in the field
+- a protocol that fielded devices or old clients depend on
+- deleting data, or a first-of-its-kind deploy to a new target
+- anything sent outside the repo as part of shipping
+- an item on the repo's own Lasting list (its agents file names them)
+
+or when the user said they want to see it before it lands. Size alone is not a reason; nor is an expected ADR — the ADR records the decision, and the plan approval was where the user made it.
+
+Declaring `none` is cheap to get wrong in only one direction: `yona-ship` escalates to a gate on its own when the finished work does something Lasting the plan did not approve. So declare `none` freely, and `required` when human judgment about *shipping* — not correctness — is the point.
 
 ## Size-Specific Planning
 
@@ -391,7 +398,7 @@ Before stopping, tell the user:
 - Any unresolved assumptions.
 - The next step, as a chip (below).
 
-Say plainly that `yona-implement` will run to the first gate — or to a pull request if there are no gates — and that `yona-ship` then takes the finished PR through merge and deploy, stopping at the ship report only when `ship_gate: required`. The user should know at planning time whether they will be asked again before the work lands.
+Say plainly that `yona-implement` will run to the first gate — or to a pull request if there are no gates — and that it then runs `yona-ship` in the same session, which takes the finished PR through merge and deploy, stopping at the ship report only when `ship_gate: required` or the work did something Lasting. The user should know at planning time whether they will be asked again before the work lands.
 
 ## Chips
 
